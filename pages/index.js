@@ -4,7 +4,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[80vh] w-full">
         <img
-          src="https://images.unsplash.com/photo-1529119368496-2a3f85db6d8c?auto=format&fit=crop&w=1950&q=80"
+          src="/HomePage.jpg"
           alt="Backpacker Hero"
           className="absolute inset-0 w-full h-full object-cover"
         />
