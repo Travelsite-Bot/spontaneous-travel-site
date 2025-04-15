@@ -1,3 +1,4 @@
+npm install react-datepicker --save
 {
   "name": "spontaneous-travel-site",
   "version": "1.0.0",
