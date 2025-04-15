@@ -1,11 +1,12 @@
+import AirportInput from "../components/AirportInput";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 export default function Home() {
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  <AirportInput label="From" value={from} onChange={setFrom} />
+<AirportInput label="To" value={to} onChange={setTo} />
 
   const times = Array.from({ length: 24 * 4 }, (_, i) => {
     const hour = String(Math.floor(i / 4)).padStart(2, "0");
