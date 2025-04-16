@@ -2,11 +2,12 @@ import AirportInput from "../components/AirportInput";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 export default function Home() {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
-  <AirportInput label="From" value={from} onChange={setFrom} />
-<AirportInput label="To" value={to} onChange={setTo} />
 
   const times = Array.from({ length: 24 * 4 }, (_, i) => {
     const hour = String(Math.floor(i / 4)).padStart(2, "0");
@@ -42,28 +43,10 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* From */}
-            <div>
-              <label className="block text-sm font-medium mb-1">From</label>
-              <input
-                type="text"
-                placeholder="e.g. London Gatwick (LGW)"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 p-2"
-              />
-            </div>
+            <AirportInput label="From" value={from} onChange={setFrom} />
 
             {/* To */}
-            <div>
-              <label className="block text-sm font-medium mb-1">To</label>
-              <input
-                type="text"
-                placeholder="Anywhere"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 p-2"
-              />
-            </div>
+            <AirportInput label="To" value={to} onChange={setTo} />
 
             {/* Departure Date */}
             <div>
