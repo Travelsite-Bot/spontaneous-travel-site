@@ -1,25 +1,31 @@
 import { useState, useEffect } from "react";
 
-export default function AirportInput({ label, value, onChange }) {
+const AirportInput = ({ label, value, onChange }) => {
   const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (!value) return setSuggestions([]);
-
-      try {
-        const res = await fetch(
-          `https://api.skypicker.com/locations?term=${value}&locale=en-US&location_types=airport&limit=5&active_only=true`
-        );
-        const data = await res.json();
-        setSuggestions(data.locations || []);
-      } catch (err) {
-        console.error("Error fetching airport suggestions:", err);
-      }
-    };
-
-    const debounce = setTimeout(fetchSuggestions, 300);
-    return () => clearTimeout(debounce);
+    if (value.length > 1) {
+      // Simulated airport data (replace with real API later)
+      const airports = [
+        "London Heathrow (LHR)",
+        "London Gatwick (LGW)",
+        "Paris Charles de Gaulle (CDG)",
+        "New York JFK (JFK)",
+        "Los Angeles (LAX)",
+        "Tokyo Haneda (HND)",
+        "Amsterdam Schiphol (AMS)",
+        "Rome Fiumicino (FCO)",
+        "Berlin Brandenburg (BER)",
+        "Barcelona El Prat (BCN)"
+      ];
+      const filtered = airports.filter((airport) =>
+        airport.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
   }, [value]);
 
   return (
@@ -29,22 +35,26 @@ export default function AirportInput({ label, value, onChange }) {
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={`e.g. ${label === "From" ? "London Gatwick (LGW)" : "Anywhere"}`}
+        onFocus={() => setShowSuggestions(true)}
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+        placeholder={`Enter airport`}
         className="w-full rounded-lg border border-gray-300 p-2"
       />
-      {suggestions.length > 0 && (
-        <ul className="bg-white border border-gray-300 mt-1 rounded-lg shadow-lg max-h-40 overflow-y-auto z-10 relative">
+      {showSuggestions && suggestions.length > 0 && (
+        <ul className="bg-white border border-gray-300 rounded-lg mt-1 shadow-lg z-10 relative">
           {suggestions.map((airport) => (
             <li
-              key={airport.id}
-              onClick={() => onChange(`${airport.name} (${airport.code})`)}
-              className="p-2 hover:bg-gray-100 cursor-pointer"
+              key={airport}
+              onClick={() => onChange(airport)}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
             >
-              {airport.name} ({airport.code}) – {airport.city.name}
+              {airport}
             </li>
           ))}
         </ul>
       )}
     </div>
   );
-}
+};
+
+export default AirportInput;
