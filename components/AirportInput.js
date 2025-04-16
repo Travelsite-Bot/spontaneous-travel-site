@@ -1,60 +1,53 @@
 import { useState, useEffect } from "react";
 
-const AirportInput = ({ label, value, onChange }) => {
+export default function AirportInput({ label, value, onChange }) {
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [query, setQuery] = useState(value);
 
   useEffect(() => {
-    if (value.length > 1) {
-      // Simulated airport data (replace with real API later)
-      const airports = [
-        "London Heathrow (LHR)",
-        "London Gatwick (LGW)",
-        "Paris Charles de Gaulle (CDG)",
-        "New York JFK (JFK)",
-        "Los Angeles (LAX)",
-        "Tokyo Haneda (HND)",
-        "Amsterdam Schiphol (AMS)",
-        "Rome Fiumicino (FCO)",
-        "Berlin Brandenburg (BER)",
-        "Barcelona El Prat (BCN)"
-      ];
-      const filtered = airports.filter((airport) =>
-        airport.toLowerCase().includes(value.toLowerCase())
-      );
-      setSuggestions(filtered);
-    } else {
+    if (query.length < 2) {
       setSuggestions([]);
+      return;
     }
-  }, [value]);
+
+    const fetchAirports = async () => {
+      const response = await fetch(`/api/airports?q=${query}`);
+      const data = await response.json();
+      setSuggestions(data);
+    };
+
+    fetchAirports();
+  }, [query]);
+
+  const handleSelect = (airport) => {
+    onChange(airport.name);
+    setQuery(airport.name);
+    setSuggestions([]);
+  };
 
   return (
-    <div>
+    <div className="relative">
       <label className="block text-sm font-medium mb-1">{label}</label>
       <input
         type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => setShowSuggestions(true)}
-        onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
-        placeholder={`Enter airport`}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Type an airport"
         className="w-full rounded-lg border border-gray-300 p-2"
       />
-      {showSuggestions && suggestions.length > 0 && (
-        <ul className="bg-white border border-gray-300 rounded-lg mt-1 shadow-lg z-10 relative">
+      {suggestions.length > 0 && (
+        <ul className="absolute z-10 bg-white border border-gray-300 rounded-md w-full mt-1 max-h-40 overflow-y-auto shadow-lg">
           {suggestions.map((airport) => (
             <li
-              key={airport}
-              onClick={() => onChange(airport)}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              key={airport.id}
+              onClick={() => handleSelect(airport)}
+              className="p-2 hover:bg-gray-100 cursor-pointer"
             >
-              {airport}
+              {airport.name}
             </li>
           ))}
         </ul>
       )}
     </div>
   );
-};
-
-export default AirportInput;
+}
