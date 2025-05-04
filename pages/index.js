@@ -30,26 +30,31 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* Main Layout */}
+      {/* Main Content */}
       <main className="flex-grow flex items-center justify-center relative p-6">
-        {/* Centered Search */}
+        {/* Search Form Box */}
         <div className="w-full max-w-xl bg-white/90 p-6 rounded-xl shadow-md z-10">
-          {/* Tabs */}
-          <div className="mb-4">
+          {/* Tabs Styled as Integrated Nav */}
+          <div className="flex mb-4 bg-gray-100 rounded overflow-hidden">
             <button
-              className={`mr-2 px-3 py-1 rounded-full ${tab === "adventure" ? "bg-green-700 text-white" : "bg-gray-200"}`}
+              className={`flex-1 px-4 py-2 text-sm font-medium ${
+                tab === "adventure" ? "bg-green-700 text-white" : "text-gray-600"
+              }`}
               onClick={() => setTab("adventure")}
             >
               ✈️ Adventure Anywhere
             </button>
             <button
-              className={`px-3 py-1 rounded-full ${tab === "select" ? "bg-green-700 text-white" : "bg-gray-200"}`}
+              className={`flex-1 px-4 py-2 text-sm font-medium ${
+                tab === "select" ? "bg-green-700 text-white" : "text-gray-600"
+              }`}
               onClick={() => setTab("select")}
             >
               📍 Select Destination
             </button>
           </div>
 
+          {/* Search Form */}
           <form onSubmit={handleSearch} className="space-y-4">
             <input
               type="text"
@@ -87,6 +92,7 @@ export default function Home() {
             </button>
           </form>
 
+          {/* Filters After Search */}
           {showFilters && (
             <div className="mt-6 border-t pt-4">
               <h3 className="font-bold mb-2">Step 2: Filters</h3>
@@ -107,11 +113,11 @@ export default function Home() {
           )}
         </div>
 
-        {/* Inspiration Strip (Blog Images) */}
-        <div className="hidden md:flex flex-col space-y-4 absolute right-4 top-1/2 -translate-y-1/2 w-40">
-          <img src="/blog1.jpg" alt="Inspiration 1" className="rounded-lg shadow-md" />
-          <img src="/blog2.jpg" alt="Inspiration 2" className="rounded-lg shadow-md" />
-          <img src="/blog3.jpg" alt="Inspiration 3" className="rounded-lg shadow-md" />
+        {/* Inspiration Strip - Square Images */}
+        <div className="hidden md:flex flex-col space-y-4 absolute right-4 top-1/2 -translate-y-1/2 w-32">
+          <img src="/blog1.jpg" alt="Inspiration 1" className="w-full aspect-square rounded-lg shadow-md" />
+          <img src="/blog2.jpg" alt="Inspiration 2" className="w-full aspect-square rounded-lg shadow-md" />
+          <img src="/blog3.jpg" alt="Inspiration 3" className="w-full aspect-square rounded-lg shadow-md" />
         </div>
       </main>
     </div>
