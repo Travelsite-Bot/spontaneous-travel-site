@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
-  const [activeTab, setActiveTab] = useState("random");
+  const [tab, setTab] = useState("adventure"); // 'adventure' or 'select'
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -11,149 +11,132 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex"
+      className="min-h-screen bg-cover bg-center"
       style={{ backgroundImage: "url('/HomePage.jpg')" }}
     >
-      {/* Main Content */}
-      <div className="flex-1 p-8 bg-white bg-opacity-80">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-8">
-          <img src="/logo.png" alt="Logo" className="h-12" />
-          <nav className="text-sm space-x-4">
-            <a href="#" className="hover:underline">About</a>
-            <a href="#" className="hover:underline">Blog</a>
-            <a href="#" className="hover:underline">Socials</a>
-          </nav>
-        </header>
-
-        {/* Tabs */}
-        <div className="flex space-x-4 mb-6">
-          <button
-            className={`py-2 px-4 rounded-full text-sm ${
-              activeTab === "random"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setActiveTab("random")}
-          >
-            ✈️ Adventure Anywhere
-          </button>
-          <button
-            className={`py-2 px-4 rounded-full text-sm ${
-              activeTab === "select"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setActiveTab("select")}
-          >
-            📍 Select Destination
-          </button>
-        </div>
-
-        {/* Search Form */}
-        <form
-          onSubmit={handleSearch}
-          className="grid gap-4 max-w-md bg-white p-6 rounded-xl shadow-lg"
-        >
-          <input
-            type="text"
-            placeholder="From airport"
-            required
-            className="p-2 border rounded"
-          />
-          <input
-            type="text"
-            placeholder="To airport (if not random)"
-            className="p-2 border rounded"
-          />
+      {/* Header */}
+      <header className="flex justify-between items-center p-4 bg-white/70 shadow-md">
+        <img src="/logo.png" alt="Logo" className="h-12" />
+        <nav className="flex items-center space-x-4 text-sm">
+          <a href="#">About</a>
+          <span>|</span>
+          <a href="#">Inspiration</a>
+          <span>|</span>
           <div className="flex space-x-2">
-            <input
-              type="date"
-              required
-              className="p-2 border rounded w-1/2"
-            />
-            <input
-              type="date"
-              required
-              className="p-2 border rounded w-1/2"
-            />
+            <button title="Instagram">📷</button>
+            <button title="Facebook">📘</button>
+            <button title="TikTok">🎵</button>
           </div>
-          <div>
-            <label className="block text-sm">Adults:</label>
-            <input
-              type="number"
-              min="1"
-              defaultValue="1"
-              className="p-2 border rounded w-full"
-            />
-          </div>
-          <div>
-            <label className="block text-sm">Children (2–12):</label>
-            <input
-              type="number"
-              min="0"
-              defaultValue="0"
-              className="p-2 border rounded w-full"
-            />
-          </div>
-          <div>
-            <label className="block text-sm">Infants (0–2):</label>
-            <input
-              type="number"
-              min="0"
-              defaultValue="0"
-              className="p-2 border rounded w-full"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            Search
-          </button>
-        </form>
+        </nav>
+      </header>
 
-        {/* Filters + Step 2 */}
-        {showFilters && (
-          <div className="mt-10 bg-white bg-opacity-90 p-6 rounded-xl shadow-lg max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Step 2: Filter Your Results</h3>
-            <div className="mb-2">
-              <label className="inline-flex items-center">
-                <input type="checkbox" className="mr-2" /> Direct flights only
-              </label>
-            </div>
-            <div>
-              <label className="block mb-1">Departure time:</label>
-              <select className="p-2 border rounded w-full">
-                <option>Any</option>
-                <option>Morning</option>
-                <option>Afternoon</option>
-                <option>Evening</option>
-              </select>
-            </div>
-            <p className="mt-4 text-gray-600 italic">[Flight results would show here]</p>
+      {/* Main Section */}
+      <main className="flex px-6 py-10 gap-6">
+        {/* Search Area */}
+        <div className="flex-3 w-full max-w-xl bg-white/90 p-6 rounded-xl shadow-md mt-20">
+          {/* Tabs */}
+          <div className="mb-4">
+            <button
+              className={`mr-2 px-3 py-1 rounded-full ${tab === "adventure" ? "bg-green-700 text-white" : "bg-gray-200"}`}
+              onClick={() => setTab("adventure")}
+            >
+              ✈️ Adventure Anywhere
+            </button>
+            <button
+              className={`px-3 py-1 rounded-full ${tab === "select" ? "bg-green-700 text-white" : "bg-gray-200"}`}
+              onClick={() => setTab("select")}
+            >
+              📍 Select Destination
+            </button>
           </div>
-        )}
-      </div>
 
-      {/* Blog Sidebar */}
-      <aside className="w-1/4 p-4 bg-gray-100 bg-opacity-90 overflow-auto">
-        <h3 className="text-lg font-semibold mb-4">From the Blog</h3>
-        <div className="space-y-4">
-          {[1, 2].map((id) => (
-            <div key={id} className="relative group">
-              <img
-                src={`/blog${id}.jpg`}
-                alt={`Blog ${id}`}
-                className="rounded-lg w-full h-auto"
+          {/* Form */}
+          <form onSubmit={handleSearch} className="space-y-4">
+            <input
+              type="text"
+              placeholder="From airport"
+              required
+              className="w-full p-2 border rounded"
+            />
+            {tab === "select" && (
+              <input
+                type="text"
+                placeholder="To airport"
+                className="w-full p-2 border rounded"
               />
-              <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white text-sm px-2 py-1 rounded">
-                {id === 1 ? "Best weekend cities" : "Travel light tips"}
+            )}
+            <div className="flex gap-2">
+              <input
+                type="date"
+                required
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="date"
+                required
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-sm">Adults</label>
+                <input type="number" min="1" defaultValue="1" className="w-full p-1 border rounded" />
+              </div>
+              <div>
+                <label className="text-sm">Children</label>
+                <input type="number" min="0" defaultValue="0" className="w-full p-1 border rounded" />
+              </div>
+              <div>
+                <label className="text-sm">Infants</label>
+                <input type="number" min="0" defaultValue="0" className="w-full p-1 border rounded" />
               </div>
             </div>
-          ))}
+            <button type="submit" className="bg-green-700 text-white w-full py-2 rounded">
+              Search
+            </button>
+          </form>
+
+          {/* Step 2 - Filters */}
+          {showFilters && (
+            <div className="mt-6 border-t pt-4">
+              <h3 className="font-bold mb-2">Step 2: Filters</h3>
+              <label className="block mb-2">
+                <input type="checkbox" /> Direct flights only
+              </label>
+              <div>
+                <label className="block">Departure time:</label>
+                <select className="w-full p-2 border rounded">
+                  <option>Any</option>
+                  <option>Morning</option>
+                  <option>Afternoon</option>
+                  <option>Evening</option>
+                </select>
+              </div>
+              {/* Placeholder for flight results */}
+              <p className="mt-4">[Flight results would show here]</p>
+            </div>
+          )}
         </div>
-      </aside>
+
+        {/* Blog/Sidebar */}
+        <aside className="flex-1 hidden md:block mt-20">
+          <h3 className="text-xl font-semibold mb-4 text-white drop-shadow">Inspiration</h3>
+          <div className="grid gap-4">
+            <div className="relative">
+              <img src="/blog1.jpg" alt="Blog" className="rounded shadow" />
+              <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 text-sm rounded">
+                Best weekend cities
+              </span>
+            </div>
+            <div className="relative">
+              <img src="/blog2.jpg" alt="Blog" className="rounded shadow" />
+              <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 text-sm rounded">
+                Travel light tips
+              </span>
+            </div>
+          </div>
+        </aside>
+      </main>
     </div>
   );
 }
