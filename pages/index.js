@@ -1,136 +1,95 @@
+// pages/index.js
 import { useState } from "react";
-import AirportInput from "../components/AirportInput";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 export default function Home() {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [departureDate, setDepartureDate] = useState(null);
-  const [returnDate, setReturnDate] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
 
-  const times = Array.from({ length: 24 * 4 }, (_, i) => {
-    const hour = String(Math.floor(i / 4)).padStart(2, "0");
-    const minute = String((i % 4) * 15).padStart(2, "0");
-    return `${hour}:${minute}`;
-  });
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setShowFilters(true);
+  };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#edf5ee] to-white">
-      {/* Hero */}
-      <section className="relative h-[80vh] w-full">
-        <img
-          src="/HomePage.jpg"
-          alt="Backpacker Hero"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Where will you end up next?
-          </h1>
-          <p className="text-lg md:text-xl max-w-xl">
-            Search anywhere. Leave anytime. Let spontaneity guide you.
-          </p>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      {/* Main Content */}
+      <div style={{ flex: 3, padding: "2rem" }}>
+        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {/* Logo (Replace src with your logo path) */}
+          <img src="/logo.png" alt="Logo" style={{ height: 50 }} />
+          <nav>
+            <a href="#">About</a> | <a href="#">Blog</a> | <a href="#">Socials</a>
+          </nav>
+        </header>
+
+        {/* Search Tabs */}
+        <div style={{ marginTop: "2rem" }}>
+          <button style={{ marginRight: 10 }}>✈️ Adventure Anywhere</button>
+          <button>📍 Select Destination</button>
         </div>
-      </section>
 
-      {/* Search Section */}
-      <section className="w-full bg-white py-12 px-4">
-        <div className="max-w-4xl mx-auto bg-[#f1f5f2] rounded-2xl shadow-xl p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-center mb-4">
-            Start your adventure
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* From */}
-            <AirportInput label="From" value={from} onChange={setFrom} />
-
-            {/* To */}
-            <AirportInput label="To" value={to} onChange={setTo} />
-
-            {/* Departure Date */}
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Departure Date
-              </label>
-              <DatePicker
-                selected={departureDate}
-                onChange={(date) => setDepartureDate(date)}
-                minDate={new Date()}
-                dateFormat="dd MMM yyyy"
-                placeholderText="Select departure"
-                className="w-full rounded-lg border border-gray-300 p-2"
-              />
-            </div>
-
-            {/* Return Date */}
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Return Date
-              </label>
-              <DatePicker
-                selected={returnDate}
-                onChange={(date) => setReturnDate(date)}
-                minDate={departureDate || new Date()}
-                dateFormat="dd MMM yyyy"
-                placeholderText="Select return"
-                className="w-full rounded-lg border border-gray-300 p-2"
-              />
-            </div>
-
-            {/* Departure Time Range */}
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Departure Time
-              </label>
-              <div className="flex gap-2">
-                <select className="w-full rounded-lg border border-gray-300 p-2">
-                  {times.map((time) => (
-                    <option key={time}>{time}</option>
-                  ))}
-                </select>
-                <span className="self-center">to</span>
-                <select className="w-full rounded-lg border border-gray-300 p-2">
-                  {times.map((time) => (
-                    <option key={time}>{time}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Return Time Range */}
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Return Time
-              </label>
-              <div className="flex gap-2">
-                <select className="w-full rounded-lg border border-gray-300 p-2">
-                  {times.map((time) => (
-                    <option key={time}>{time}</option>
-                  ))}
-                </select>
-                <span className="self-center">to</span>
-                <select className="w-full rounded-lg border border-gray-300 p-2">
-                  {times.map((time) => (
-                    <option key={time}>{time}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+        {/* Search Form */}
+        <form onSubmit={handleSearch} style={{ marginTop: "1rem", display: "grid", gap: "1rem", maxWidth: 500 }}>
+          <input type="text" placeholder="From airport" required />
+          <input type="text" placeholder="To airport (if not random)" />
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <input type="date" placeholder="Start Date" required />
+            <input type="date" placeholder="End Date" required />
           </div>
+          <div>
+            <label>Adults: </label>
+            <input type="number" min="1" defaultValue="1" />
+          </div>
+          <div>
+            <label>Children (2–12): </label>
+            <input type="number" min="0" defaultValue="0" />
+          </div>
+          <div>
+            <label>Infants (0–2): </label>
+            <input type="number" min="0" defaultValue="0" />
+          </div>
+          <button type="submit">Search</button>
+        </form>
 
-          {/* Direct flight + Search */}
-          <div className="flex items-center justify-between mt-6">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" className="rounded" />
-              Direct flights only
-            </label>
-            <button className="bg-[#7ca982] hover:bg-[#6d9572] text-white font-medium py-2 px-6 rounded-xl transition">
-              Search
-            </button>
+        {/* Filters after search */}
+        {showFilters && (
+          <div style={{ marginTop: "2rem" }}>
+            <h3>Step 2: Filters</h3>
+            <label><input type="checkbox" /> Direct flights only</label>
+            <div>
+              <label>Departure time:</label>
+              <select>
+                <option>Any</option>
+                <option>Morning</option>
+                <option>Afternoon</option>
+                <option>Evening</option>
+              </select>
+            </div>
+            {/* Add flight results display here */}
+            <p>[Flight results would show here]</p>
+          </div>
+        )}
+      </div>
+
+      {/* Blog Sidebar */}
+      <div style={{ flex: 1, background: "#f0f0f0", padding: "1rem" }}>
+        <h3>From the Blog</h3>
+        <div style={{ display: "grid", gap: "1rem" }}>
+          <div style={{ position: "relative" }}>
+            <img src="/blog1.jpg" alt="Blog" style={{ width: "100%", height: "auto" }} />
+            <span style={{
+              position: "absolute", bottom: "10px", left: "10px",
+              background: "rgba(0,0,0,0.6)", color: "#fff", padding: "5px"
+            }}>Best weekend cities</span>
+          </div>
+          <div style={{ position: "relative" }}>
+            <img src="/blog2.jpg" alt="Blog" style={{ width: "100%", height: "auto" }} />
+            <span style={{
+              position: "absolute", bottom: "10px", left: "10px",
+              background: "rgba(0,0,0,0.6)", color: "#fff", padding: "5px"
+            }}>Travel light tips</span>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
