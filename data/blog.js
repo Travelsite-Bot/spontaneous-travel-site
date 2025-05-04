@@ -1,23 +1,21 @@
-// data/blogs.js
-const blogs = [
+// /data/blogs.js
+export const blogs = [
   {
-    slug: 'weekend-cities',
-    title: 'Best Weekend Cities',
-    content: 'Explore the best cities for a quick weekend getaway...',
-    image: '/blog1.jpg',
+    slug: "best-weekend-cities",
+    title: "Best Weekend Cities",
+    image: "/blog1.jpg",
+    content: "Discover quick getaways and urban escapes perfect for a short weekend trip..."
   },
   {
-    slug: 'travel-light',
-    title: 'Travel Light Tips',
-    content: 'Packing smart for spontaneous adventures...',
-    image: '/blog2.jpg',
+    slug: "travel-light-tips",
+    title: "Travel Light Tips",
+    image: "/blog2.jpg",
+    content: "Packing smart makes travel easier. Here are the best tips for travelling light without sacrificing comfort..."
   },
   {
-    slug: 'adventure-hacks',
-    title: 'Adventure Hacks',
-    content: 'Tips for travelers who chase the unknown...',
-    image: '/blog3.jpg',
-  },
+    slug: "hidden-european-gems",
+    title: "Hidden European Gems",
+    image: "/blog3.jpg",
+    content: "Explore some of Europe's lesser-known but breathtaking destinations waiting to be discovered..."
+  }
 ];
-
-export default blogs;
