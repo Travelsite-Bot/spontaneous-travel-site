@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center"
+      className="min-h-screen bg-cover bg-center flex flex-col"
       style={{ backgroundImage: "url('/HomePage.jpg')" }}
     >
       {/* Header */}
@@ -31,9 +31,9 @@ export default function Home() {
       </header>
 
       {/* Main Section */}
-      <main className="flex px-6 py-10 gap-6">
-        {/* Search Area */}
-        <div className="flex-3 w-full max-w-xl bg-white/90 p-6 rounded-xl shadow-md mt-20">
+      <main className="flex-grow flex flex-col md:flex-row justify-center items-center p-6">
+        {/* Centered Search Area */}
+        <div className="flex-1 w-full max-w-xl bg-white/90 p-6 rounded-xl shadow-md">
           {/* Tabs */}
           <div className="mb-4">
             <button
@@ -96,7 +96,7 @@ export default function Home() {
             </button>
           </form>
 
-          {/* Step 2 - Filters */}
+          {/* Filters */}
           {showFilters && (
             <div className="mt-6 border-t pt-4">
               <h3 className="font-bold mb-2">Step 2: Filters</h3>
@@ -112,26 +112,31 @@ export default function Home() {
                   <option>Evening</option>
                 </select>
               </div>
-              {/* Placeholder for flight results */}
               <p className="mt-4">[Flight results would show here]</p>
             </div>
           )}
         </div>
 
-        {/* Blog/Sidebar */}
-        <aside className="flex-1 hidden md:block mt-20">
-          <h3 className="text-xl font-semibold mb-4 text-white drop-shadow">Inspiration</h3>
+        {/* Blog / Inspiration Sidebar */}
+        <aside className="flex-1 mt-10 md:mt-0 md:ml-10 bg-white/90 p-4 rounded-xl shadow-md max-w-sm">
+          <h3 className="text-xl font-semibold mb-4">Inspiration</h3>
           <div className="grid gap-4">
             <div className="relative">
-              <img src="/blog1.jpg" alt="Blog" className="rounded shadow" />
+              <img src="/blog1.jpg" alt="Blog 1" className="rounded shadow w-full" />
               <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 text-sm rounded">
                 Best weekend cities
               </span>
             </div>
             <div className="relative">
-              <img src="/blog2.jpg" alt="Blog" className="rounded shadow" />
+              <img src="/blog2.jpg" alt="Blog 2" className="rounded shadow w-full" />
               <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 text-sm rounded">
                 Travel light tips
+              </span>
+            </div>
+            <div className="relative">
+              <img src="/blog3.jpg" alt="Blog 3" className="rounded shadow w-full" />
+              <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 text-sm rounded">
+                Hidden gem destinations
               </span>
             </div>
           </div>
