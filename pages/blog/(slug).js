@@ -1,6 +1,6 @@
 // /pages/inspiration/[slug].js
 import { useRouter } from "next/router";
-import { blogs } from "../../data/blogs.js";
+import { blogs } from "../../data/blogs";
 
 export default function BlogPost() {
   const router = useRouter();
