@@ -1,81 +1,111 @@
 // /data/blogs.js
 export const blogs = [
   {
-    slug: "Embrace Stockholm",
+    slug: "embrace-stockholm",
     title: "Embracing the Serenity of the Stockholm Archipelago Trail",
     image: "/blog1.jpg",
-    content: "I’ve always chased places that feel untouched, where silence isn’t awkward but sacred—and that’s exactly what I found on the Stockholm Archipelago Trail. In 2025, this new long-distance trail opened quietly, without the fanfare of other big-name routes. It spans over 270 kilometers across 21 islands in Sweden’s east coast, yet it felt like a personal invitation the moment I heard about it. So I went.
+    content: `I’ve always chased places that feel untouched, where silence isn’t awkward but sacred—and that’s exactly what I found on the Stockholm Archipelago Trail. In 2025, this new long-distance trail opened quietly, without the fanfare of other big-name routes. It spans over 270 kilometers across 21 islands in Sweden’s east coast, yet it felt like a personal invitation the moment I heard about it. So I went.
+
 Starting from Arholma
 My journey began on Arholma, the northernmost island. A short ferry ride delivered me to a quiet harbor where red wooden cottages peeked out from thick pine forests. It felt like stepping into a postcard—except there were no crowds, no camera flashes, just the sound of the sea lapping at the docks and the soft crunch of gravel beneath my boots.
+
 That first day I walked slowly, not out of fatigue, but out of awe. Wildflowers sprouted between mossy rocks, and old coastal bunkers sat like ancient guardians. I stayed in a family-run guesthouse and fell asleep to the hush of wind through the birch trees.
+
 Island-Hopping Through Stillness
 Every island had its own personality. On Möja, I met a beekeeper who offered me a spoon of the freshest honey I’ve ever tasted, right there in the middle of the woods. On Finnhamn, I scrambled down a trail to a hidden cove and swam alone in the icy blue water, the sky so wide it felt like it could swallow me whole.
+
 The trail isn’t continuous—you move between islands by local ferries, each ride giving you a moment to reset, sip coffee, and watch as the rocky islets slip by like scenes in a slow-moving film.
+
 Swedish Simplicity and Summer Light
 Grinda was a highlight—not for anything flashy, but because I stayed there during a local summer celebration. I was drawn in by laughter and music and soon found myself dancing around a maypole with strangers who quickly felt like old friends. We feasted on boiled potatoes, dill, and cured fish, washed down with homemade snaps and sung toasts.
+
 There’s something grounding about the Swedish way of life. Everything is unhurried, intentional. No one’s trying to impress you. And maybe that’s what makes it so memorable.
+
 Pushing Through and Slowing Down
 Utö challenged me. The trails were longer, steeper, and by mid-day I was cursing my backpack. But by sunset, sitting on a cliff watching the light stretch endlessly over the Baltic Sea, I felt small in the best way possible. Nåttarö, with its sandy pine forests, offered a gentle contrast—a place where I let my body recover and simply lay on the beach doing nothing but breathing.
+
 Each island was its own chapter, and every hike taught me something—mostly that I don’t need much to feel content: a good pair of shoes, clear air, and time.
+
 Ending at Landsort
 The journey ended on Landsort Island, where Sweden’s oldest lighthouse stands watch. I climbed to the top just as a storm rolled in, the wind tugging at my jacket, the sea dark and moody. It felt like the trail was saying goodbye in its own dramatic, Nordic way.
+
 When I boarded the final ferry back to Stockholm, I felt different. Lighter, somehow. Like I had walked off some part of myself that I no longer needed.
+
 Final Thoughts
 The Stockholm Archipelago Trail isn’t about ticking off tourist sights. It’s about moving through a landscape that demands your presence and rewards your patience. It’s about long walks, quiet mornings, and the occasional unexpected connection—human or otherwise.
+
 If you’re looking for a place to hear your own thoughts, to walk without a soundtrack other than birdsong and wind, this is your place.
-Go before the world catches on."
+Go before the world catches on.`
   },
   {
-    slug: "The Greece you don't know!",
+    slug: "the-greece-you-dont-know",
     title: "Paros: A Journey Through Timeless Beauty",
     image: "/blog2.jpg",
-    content: "I arrived in Paros with a heart full of anticipation and a mind eager for discovery. As the ferry docked at Parikia, the island's capital, the sun cast a golden hue over the whitewashed buildings, and the scent of the sea filled the air. The charm of the Cyclades was immediately evident, but Paros promised something uniquely its own.
+    content: `I arrived in Paros with a heart full of anticipation and a mind eager for discovery. As the ferry docked at Parikia, the island's capital, the sun cast a golden hue over the whitewashed buildings, and the scent of the sea filled the air. The charm of the Cyclades was immediately evident, but Paros promised something uniquely its own.
+
 Wandering Through Parikia
 Stepping into the labyrinthine alleys of Parikia, I was enveloped by the island's history. The cobblestone paths led me to the Panagia Ekatontapiliani, a Byzantine church dating back to 326 AD. Inside, the cool stone walls and ancient icons whispered tales of centuries past. 
+
 As evening approached, the waterfront came alive. Locals and travelers alike gathered at seaside tavernas, sharing stories over plates of grilled octopus and glasses of ouzo. The gentle lapping of waves provided a soothing soundtrack to the vibrant conversations.
+
 The Allure of Naoussa
 A short journey brought me to Naoussa, a picturesque fishing village that seemed to have leapt from a postcard. The Venetian fortress, partially submerged and accessible via a stone path through the sea, stood as a testament to the island's storied past. 
+
 Wandering through the narrow streets, I discovered boutiques showcasing local crafts and cafes where the aroma of freshly baked pastries beckoned. At a cozy eatery, I savored a traditional marinated zucchini salad, its flavors a delightful blend of freshness and tradition.
+
 Embracing Tradition in Lefkes
 Venturing inland, I found myself in Lefkes, a village nestled amidst rolling hills. The serenity here was palpable. Stone houses adorned with blooming bougainvillea lined the pathways, and the distant chime of church bells added to the tranquil ambiance. At a local taverna, I joined residents in a spirited dance, the rhythms of traditional music echoing through the night. 
+
 Nature's Masterpieces
 Paros' natural beauty is undeniable. Kolymbithres Beach, with its unique granite formations and crystal-clear waters, offered a perfect spot for relaxation and reflection. 
+
 A hike through Paros Park led me to panoramic vistas of the Aegean Sea. The trails, dotted with aromatic herbs and wildflowers, culminated at a lighthouse where the horizon stretched endlessly, a reminder of nature's grandeur. 
+
 A Farewell to Remember
 On my final evening, I attended a traditional Greek night in the village of Drios. Under a canopy of stars, I joined locals and fellow travelers in dancing, feasting on homemade delicacies, and toasting with local wine. The warmth of Greek hospitality enveloped me, making it a night to cherish. 
-Paros is more than just an island; it's an experience that lingers in the soul. Its blend of history, culture, and natural beauty offers a journey that resonates long after departure. If you seek a destination that captivates the heart and stirs the spirit, Paros awaits.
-."
+
+Paros is more than just an island; it's an experience that lingers in the soul. Its blend of history, culture, and natural beauty offers a journey that resonates long after departure. If you seek a destination that captivates the heart and stirs the spirit, Paros awaits.`
   },
   {
-    slug: "India's Hidden Gem",
+    slug: "indias-hidden-gem",
     title: "Bioluminescence and Bliss: Discovering India’s Hidden Paradise on Bangaram Island",
     image: "/blog3.jpg",
-    content: "I never imagined I’d find my version of the Maldives on an obscure island in the Arabian Sea—but Bangaram proved me wrong. Tucked away in the Lakshadweep archipelago, Bangaram Island is a destination that's only recently started catching the eye of adventurous travelers—and for good reason. It's remote, raw, and real in a way most tropical getaways simply aren’t anymore.
+    content: `I never imagined I’d find my version of the Maldives on an obscure island in the Arabian Sea—but Bangaram proved me wrong. Tucked away in the Lakshadweep archipelago, Bangaram Island is a destination that's only recently started catching the eye of adventurous travelers—and for good reason. It's remote, raw, and real in a way most tropical getaways simply aren’t anymore.
+
 Getting There: The Journey is Part of the Adventure
 Getting to Bangaram isn’t straightforward, and that’s part of its charm. I started my journey from London, flying into Kochi, India. From there, I took a domestic flight to Agatti Island—the only airstrip in Lakshadweep. The final leg? A 90-minute speedboat ride over turquoise waters that made the Caribbean look pale. There’s no shortcut here. But maybe that’s what keeps this paradise so pristine.
+
 As our boat approached Bangaram, the island appeared like a mirage—untouched white sand, dense green palms, and not a single building in sight. I didn’t know it then, but I was about to fall off the grid in the most luxurious way imaginable.
+
 First Impressions: Eco-Luxury in a Coconut Grove
 The only accommodation on the island is the newly opened Praveg Resort, an eco-conscious retreat that blends seamlessly with the landscape. My cottage was built to resemble a seashell, complete with curved wooden beams and a thatched roof. It was rustic, yes—but with air conditioning, locally sourced seafood meals, and the kind of silence that city-dwellers crave.
+
 The resort runs almost entirely on solar energy and harvests rainwater for everyday use. There’s no Wi-Fi, no TVs, and no distractions. You wake with the sun and sleep with the sound of the waves just meters from your door.
+
 The Night the Ocean Glowed
 The moment that defined my trip happened one night after dinner. A local guide approached me quietly and said, “Would you like to see something magical?”
+
 I followed him to a kayak on the beach, slightly skeptical, still full from fresh tuna and coconut curry. We paddled a few hundred meters from shore—and then I saw it. With every stroke, the water beneath us shimmered in blue light, like fireflies trapped under the surface. Bioluminescence. It was real, and it was dazzling.
+
 There we were—drifting silently on a glowing sea, under a sky powdered with stars. It felt like I was floating through another world entirely. I didn’t take a single photo. Some things are better remembered than captured.
+
 Life Beneath the Surface
 The next morning, I took a guided snorkeling tour just off the reef. Unlike popular tourist dives, we were the only ones in the water. I floated above coral gardens alive with color and movement. Parrotfish nibbled at the reefs, sea turtles glided effortlessly below, and I spotted a pair of manta rays dancing in slow motion. It wasn’t just beautiful—it was humbling.
+
 A Lesson in Slowing Down
 I spent the rest of my days doing less than I thought I was capable of—reading in hammocks, collecting shells, watching hermit crabs battle for turf. Time stretched in the best way. Bangaram reminded me that travel doesn't always have to be fast-paced or packed with checklists. Sometimes, the best trips are the ones that ask nothing of you but your presence.
+
 Why Bangaram Now?
 In a time when over-tourism is exhausting destinations and travelers alike, Bangaram is still wild and unspoiled. It’s not for everyone. It’s for the curious. The quiet seekers. The ones willing to venture a little further for something truly extraordinary.
+
 Quick Tips for Visiting Bangaram
-•	Best Time to Go: October to March for clear skies and calm seas; June to September for a chance to see bioluminescence.
-•	Permits Required: Foreign nationals need special entry permits for Lakshadweep—these are arranged through your hotel or tour provider.
-•	Connectivity: There is no mobile network or Wi-Fi on the island. Download what you need beforehand—and embrace the disconnection.
-________________________________________
+• Best Time to Go: October to March for clear skies and calm seas; June to September for a chance to see bioluminescence.
+• Permits Required: Foreign nationals need special entry permits for Lakshadweep—these are arranged through your hotel or tour provider.
+• Connectivity: There is no mobile network or Wi-Fi on the island. Download what you need beforehand—and embrace the disconnection.
+
 Final Thoughts
 Bangaram isn’t just a place—it’s a state of mind. A reminder that the world still holds secrets. And sometimes, those secrets glow at night under a blanket of stars.
-If you're craving an escape that feels like an undiscovered chapter in your travel story, put Bangaram Island on your list. But go soon—before the rest of the world catches on.
 
-"
+If you're craving an escape that feels like an undiscovered chapter in your travel story, put Bangaram Island on your list. But go soon—before the rest of the world catches on.`
   }
 ];
