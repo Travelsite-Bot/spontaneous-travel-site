@@ -12,10 +12,13 @@ export default function BlogPost() {
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
-      <img src={post.image} alt={post.title} className="w-full h-64 object-cover rounded mb-6" />
+      <img
+        src={post.image}
+        alt={post.title}
+        className="w-full h-64 object-cover rounded mb-6"
+      />
       <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
       <p>{post.content}</p>
     </div>
   );
 }
-
