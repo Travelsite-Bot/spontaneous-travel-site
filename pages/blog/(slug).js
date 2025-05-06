@@ -1,24 +1,27 @@
-// /pages/inspiration/[slug].js
-import { useRouter } from "next/router";
-import { blogs } from "../../data/blogs";
+// /pages/blog/[slug].js
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import { blogs } from '../../data/blogs';
 
 export default function BlogPost() {
   const router = useRouter();
   const { slug } = router.query;
 
-  const post = blogs.find((b) => b.slug === slug);
+  const blog = blogs.find((b) => b.slug === slug);
 
-  if (!post) return <div className="p-8">Loading...</div>;
+  if (!blog) return <p>Loading...</p>;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <img
-        src={post.image}
-        alt={post.title}
-        className="w-full h-64 object-cover rounded mb-6"
+    <div style={{ padding: '2rem' }}>
+      <h1>{blog.title}</h1>
+      <Image
+        src={blog.image}
+        alt={blog.title}
+        width={800}
+        height={500}
+        style={{ borderRadius: '8px' }}
       />
-      <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-      <p>{post.content}</p>
+      <p style={{ whiteSpace: 'pre-line', marginTop: '1rem' }}>{blog.content}</p>
     </div>
   );
 }
