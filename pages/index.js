@@ -117,7 +117,7 @@ export default function Home() {
         <div className="hidden md:flex flex-col space-y-4 absolute right-4 top-1/2 -translate-y-1/2 w-32">
           <img src="/blog1.jpg" alt="Inspiration 1" className="w-full aspect-square rounded-lg shadow-md" />
           <img src="/blog2.jpg" alt="Inspiration 2" className="w-full aspect-square rounded-lg shadow-md" />
-          <img src="/blog3.jpg" alt="Inspiration 3" className="w-full aspect-square rounded-lg shadow-md" />
+          <img src="/blog3.jpg.jpg" alt="Inspiration 3" className="w-full aspect-square rounded-lg shadow-md" />
         </div>
       </main>
     </div>
