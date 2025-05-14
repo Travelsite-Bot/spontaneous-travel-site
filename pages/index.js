@@ -141,7 +141,7 @@ export default function Home() {
             <div className="flex flex-col space-y-4">
               <img src="/blog1.jpg" alt="Inspiration 1" className="w-full rounded-lg shadow-md" />
               <img src="/blog2.jpg" alt="Inspiration 2" className="w-full rounded-lg shadow-md" />
-              <img src="/blog3.jpg" alt="Inspiration 3" className="w-full rounded-lg shadow-md" />
+              <img src="/blog3.jpg.jpg" alt="Inspiration 3" className="w-full rounded-lg shadow-md" />
             </div>
           </div>
         </div>
