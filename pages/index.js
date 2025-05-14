@@ -109,15 +109,41 @@ export default function Home() {
                 </select>
               </div>
               <p className="mt-4">[Flight results would show here]</p>
+
+              {/* Mock Search Results Section */}
+              <div className="mt-8 p-6 bg-white/80 rounded-lg shadow">
+                <h2 className="text-xl font-bold mb-4">Step 3: Example Results</h2>
+                <div className="grid gap-4">
+                  <div className="p-4 border rounded flex justify-between items-center bg-white">
+                    <div>
+                      <p className="font-medium">✈️ Stockholm → Rome</p>
+                      <p className="text-sm text-gray-600">Direct · 3h 15m</p>
+                    </div>
+                    <p className="font-bold text-green-700">$120</p>
+                  </div>
+                  <div className="p-4 border rounded flex justify-between items-center bg-white">
+                    <div>
+                      <p className="font-medium">✈️ Stockholm → Paris</p>
+                      <p className="text-sm text-gray-600">1 stop · 5h</p>
+                    </div>
+                    <p className="font-bold text-green-700">$98</p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 mt-4">Note: This is a prototype layout for review.</p>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Inspiration Strip - Square Images */}
-        <div className="hidden md:flex flex-col space-y-4 absolute right-4 top-1/2 -translate-y-1/2 w-32">
-          <img src="/blog1.jpg" alt="Inspiration 1" className="w-full aspect-square rounded-lg shadow-md" />
-          <img src="/blog2.jpg" alt="Inspiration 2" className="w-full aspect-square rounded-lg shadow-md" />
-          <img src="/blog3.jpg.jpg" alt="Inspiration 3" className="w-full aspect-square rounded-lg shadow-md" />
+        {/* Inspiration Strip - Enhanced Overlay */}
+        <div className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2">
+          <div className="bg-white/50 backdrop-blur-sm p-4 rounded-lg shadow-lg w-40">
+            <div className="flex flex-col space-y-4">
+              <img src="/blog1.jpg" alt="Inspiration 1" className="w-full rounded-lg shadow-md" />
+              <img src="/blog2.jpg" alt="Inspiration 2" className="w-full rounded-lg shadow-md" />
+              <img src="/blog3.jpg" alt="Inspiration 3" className="w-full rounded-lg shadow-md" />
+            </div>
+          </div>
         </div>
       </main>
     </div>
