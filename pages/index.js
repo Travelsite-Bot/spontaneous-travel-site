@@ -1,7 +1,4 @@
 import { useRef, useState } from "react";
-import dynamic from "next/dynamic";
-
-const TimeSlider = dynamic(() => import("../components/TimeSlider"), { ssr: false });
 
 export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
@@ -88,11 +85,11 @@ export default function Home() {
           </form>
         </div>
 
-        {/* Inspiration Sidebar with background */}
+        {/* Inspiration Sidebar */}
         <div className="hidden md:flex flex-col space-y-4 absolute right-4 top-1/2 -translate-y-1/2 w-36 bg-white/60 p-2 rounded-lg">
           <img src="/blog1.jpg" alt="Inspiration 1" className="w-full aspect-square rounded-lg shadow-md" />
           <img src="/blog2.jpg" alt="Inspiration 2" className="w-full aspect-square rounded-lg shadow-md" />
-          <img src="/blog3.jpg" alt="Inspiration 3" className="w-full aspect-square rounded-lg shadow-md" />
+          <img src="/blog3.jpg.jpg" alt="Inspiration 3" className="w-full aspect-square rounded-lg shadow-md" />
         </div>
       </main>
 
@@ -101,9 +98,23 @@ export default function Home() {
         <section ref={step2Ref} className="bg-white py-8 px-4 flex flex-col items-center">
           <div className="w-full max-w-6xl bg-white rounded-lg shadow-lg p-6 space-y-6">
             <h2 className="text-xl font-bold text-gray-700">Step 2: Filters</h2>
-            <div>
-              <label className="block text-sm font-medium mb-2">Departure Time Range</label>
-              <TimeSlider />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium block mb-1">Departure Start Time</label>
+                <input
+                  type="time"
+                  step="900"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium block mb-1">Departure End Time</label>
+                <input
+                  type="time"
+                  step="900"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
             </div>
           </div>
 
