@@ -11,17 +11,21 @@ export default function AirportInput({ label, value, onChange }) {
     }
 
     const fetchAirports = async () => {
-      const response = await fetch(`/api/airports?q=${query}`);
-      const data = await response.json();
-      setSuggestions(data);
+      try {
+        const response = await fetch(`/api/airports?q=${query}`);
+        const data = await response.json();
+        setSuggestions(data);
+      } catch (err) {
+        console.error("Error fetching airports", err);
+      }
     };
 
     fetchAirports();
   }, [query]);
 
   const handleSelect = (airport) => {
-    onChange(airport.code); // ✅ store IATA code (e.g. LHR)
-    setQuery(`${airport.name} (${airport.code})`); // Show readable name in input
+    onChange(airport.code); // ✅ save IATA code
+    setQuery(`${airport.name} (${airport.code})`); // show nice text
     setSuggestions([]);
   };
 
