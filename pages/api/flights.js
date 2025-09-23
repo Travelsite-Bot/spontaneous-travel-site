@@ -2,15 +2,17 @@ export default async function handler(req, res) {
   const { q } = req.query;
 
   if (!q || q.length < 2) {
-    return res.status(400).json([]);
+    return res.status(200).json([]);
   }
 
   try {
-    const url = `https://autocomplete.travelpayouts.com/places2?term=${q}&locale=en`;
+    const url = `https://autocomplete.travelpayouts.com/places2?term=${encodeURIComponent(
+      q
+    )}&locale=en`;
     const response = await fetch(url);
     const data = await response.json();
 
-    // Simplify results
+    // Simplify results for frontend
     const airports = data
       .filter((item) => item.type === "airport")
       .map((a) => ({
