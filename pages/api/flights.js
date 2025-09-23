@@ -1,20 +1,27 @@
 export default async function handler(req, res) {
-  const { origin, destination, depart_date } = req.query;
+  const { q } = req.query;
 
-  const API_TOKEN = "c0288af3180b67c1066ef7861aaeeb33";
-
-  const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${origin}&destination=${destination}&departure_at=${depart_date}&currency=usd`;
+  if (!q || q.length < 2) {
+    return res.status(400).json([]);
+  }
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        "X-Access-Token": API_TOKEN,
-      },
-    });
-
+    const url = `https://autocomplete.travelpayouts.com/places2?term=${q}&locale=en`;
+    const response = await fetch(url);
     const data = await response.json();
-    res.status(200).json(data);
+
+    // Simplify results
+    const airports = data
+      .filter((item) => item.type === "airport")
+      .map((a) => ({
+        name: a.name,
+        code: a.code,
+        city: a.city_name,
+      }));
+
+    res.status(200).json(airports);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch flights" });
+    console.error("Airport search failed", error);
+    res.status(500).json({ error: "Failed to fetch airports" });
   }
 }
