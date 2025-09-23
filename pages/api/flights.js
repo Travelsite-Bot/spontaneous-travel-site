@@ -1,29 +1,29 @@
 export default async function handler(req, res) {
-  const { q } = req.query;
+  const { origin, destination, depart_date } = req.query;
 
-  if (!q || q.length < 2) {
-    return res.status(200).json([]);
+  const API_TOKEN = process.env.TP_API_TOKEN; // ✅ from Vercel env var
+
+  if (!API_TOKEN) {
+    return res.status(500).json({ error: "Missing API token" });
   }
 
+  const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${origin}&destination=${destination}&departure_at=${depart_date}&currency=usd`;
+
   try {
-    const url = `https://autocomplete.travelpayouts.com/places2?term=${encodeURIComponent(
-      q
-    )}&locale=en`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        "X-Access-Token": API_TOKEN,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
     const data = await response.json();
-
-    // Simplify results for frontend
-    const airports = data
-      .filter((item) => item.type === "airport")
-      .map((a) => ({
-        name: a.name,
-        code: a.code,
-        city: a.city_name,
-      }));
-
-    res.status(200).json(airports);
+    res.status(200).json(data);
   } catch (error) {
-    console.error("Airport search failed", error);
-    res.status(500).json({ error: "Failed to fetch airports" });
+    console.error("Flights fetch failed", error);
+    res.status(500).json({ error: "Failed to fetch flights" });
   }
 }
