@@ -1,41 +1,48 @@
-// pages/index.js
 import { useRef, useState } from "react";
 import AirportInput from "../components/airportinputs";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
   const [tab, setTab] = useState("adventure");
   const [flights, setFlights] = useState([]);
-  const [origin, setOrigin] = useState(""); // will hold IATA code from AirportInput
+  const [oneWay, setOneWay] = useState(true);
+  const [departDate, setDepartDate] = useState(null);
+  const [returnDate, setReturnDate] = useState(null);
+  const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
+  const [directOnly, setDirectOnly] = useState(false);
+  const [sortBy, setSortBy] = useState("price");
   const step2Ref = useRef(null);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    const form = new FormData(e.target);
-    const depart_date = form.get("depart_date");
-    const adults = form.get("adults") || 1;
-    const children = form.get("children") || 0;
-    const infants = form.get("infants") || 0;
 
-    // origin / destination come from AirportInput state (IATA codes)
     try {
-      const qs = new URLSearchParams({
-        origin: origin || "",
-        destination: destination || "",
-        depart_date: depart_date || "",
-        adults: adults,
-        children: children,
-        infants: infants,
-      });
-
-      const res = await fetch(`/api/flights?${qs.toString()}`);
+      const res = await fetch(
+        `/api/flights?origin=${origin}&destination=${destination}&depart_date=${
+          departDate?.toISOString().split("T")[0]
+        }`
+      );
       const data = await res.json();
-      // Travelpayouts returns results inside data.data (older) or data?.data, so prefer that
-      const results = data?.data || data?.result || [];
+      let results = data.data || [];
+
+      if (directOnly) {
+        results = results.filter((f) => f.number_of_changes === 0);
+      }
+
+      if (sortBy === "price") {
+        results.sort((a, b) => a.price - b.price);
+      } else if (sortBy === "shortest") {
+        results.sort((a, b) => a.duration - b.duration);
+      } else if (sortBy === "longest") {
+        results.sort((a, b) => b.duration - a.duration);
+      }
+
       setFlights(results);
     } catch (err) {
-      console.error("Error fetching flights:", err);
+      console.error("Error fetching flights", err);
       setFlights([]);
     }
 
@@ -51,19 +58,11 @@ export default function Home() {
       style={{ backgroundImage: "url('/HomePage.jpg')" }}
     >
       {/* Header */}
-      <header className="flex justify-between items-center p-4 bg-white/70 shadow-md">
-        <img src="/logo.png" alt="Logo" className="h-12" />
-        <nav className="flex items-center space-x-4 text-sm">
-          <a href="#">About</a>
-          <span>|</span>
-          <a href="#">Inspiration</a>
-          <span>|</span>
-          <div className="flex space-x-2">
-            <button title="Instagram">📷</button>
-            <button title="Facebook">📘</button>
-            <button title="TikTok">🎵</button>
-          </div>
-        </nav>
+      <header className="flex flex-col items-start p-4 bg-white/70 shadow-md">
+        <h1 className="text-2xl font-light text-gray-400 lowercase">spontaria</h1>
+        <p className="italic text-black text-sm mt-1">
+          When you have the dates, let the adventure find you...
+        </p>
       </header>
 
       {/* Main Search */}
@@ -89,57 +88,151 @@ export default function Home() {
           </div>
 
           <form onSubmit={handleSearch} className="space-y-4">
-            {/* Airport inputs use our autocomplete component */}
-            <AirportInput label="From Airport" value={origin} onChange={setOrigin} />
+            {/* Airport inputs */}
+            <AirportInput
+              label="From airport"
+              value={origin}
+              onChange={(val) => setOrigin(val)}
+            />
             {tab === "select" && (
-              <AirportInput label="To Airport" value={destination} onChange={setDestination} />
+              <AirportInput
+                label="To airport"
+                value={destination}
+                onChange={(val) => setDestination(val)}
+              />
             )}
 
-            <div className="flex gap-2">
-              <input name="depart_date" type="date" required className="w-full p-2 border rounded" />
-              <input name="return_date" type="date" className="w-full p-2 border rounded" />
+            {/* One way / return toggle */}
+            <div className="flex gap-4 items-center">
+              <label className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  checked={oneWay}
+                  onChange={() => setOneWay(true)}
+                />
+                One-way
+              </label>
+              <label className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  checked={!oneWay}
+                  onChange={() => setOneWay(false)}
+                />
+                Return
+              </label>
             </div>
 
+            {/* Date pickers */}
+            <div className="flex gap-2">
+              <DatePicker
+                selected={departDate}
+                onChange={(date) => setDepartDate(date)}
+                placeholderText="Departure date"
+                className="w-full p-2 border rounded"
+              />
+              {!oneWay && (
+                <DatePicker
+                  selected={returnDate}
+                  onChange={(date) => setReturnDate(date)}
+                  placeholderText="Return date"
+                  className="w-full p-2 border rounded"
+                />
+              )}
+            </div>
+
+            {/* Passengers */}
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <label className="text-sm">Adults</label>
-                <input name="adults" type="number" min="1" defaultValue="1" className="w-full p-1 border rounded" />
+                <input
+                  name="adults"
+                  type="number"
+                  min="1"
+                  defaultValue="1"
+                  className="w-full p-1 border rounded"
+                />
               </div>
               <div>
                 <label className="text-sm">Children</label>
-                <input name="children" type="number" min="0" defaultValue="0" className="w-full p-1 border rounded" />
+                <input
+                  name="children"
+                  type="number"
+                  min="0"
+                  defaultValue="0"
+                  className="w-full p-1 border rounded"
+                />
               </div>
               <div>
                 <label className="text-sm">Infants</label>
-                <input name="infants" type="number" min="0" defaultValue="0" className="w-full p-1 border rounded" />
+                <input
+                  name="infants"
+                  type="number"
+                  min="0"
+                  defaultValue="0"
+                  className="w-full p-1 border rounded"
+                />
               </div>
             </div>
 
-            <button type="submit" className="bg-green-700 text-white w-full py-2 rounded">Search</button>
+            <button
+              type="submit"
+              className="bg-green-700 text-white w-full py-2 rounded"
+            >
+              Search
+            </button>
           </form>
         </div>
 
         {/* Inspiration Sidebar */}
         <div className="hidden md:flex flex-col space-y-4 absolute right-4 top-1/2 -translate-y-1/2 w-36 bg-white/60 p-2 rounded-lg">
-          <img src="/blog1.jpg" alt="Inspiration 1" className="w-full aspect-square rounded-lg shadow-md" />
-          <img src="/blog2.jpg" alt="Inspiration 2" className="w-full aspect-square rounded-lg shadow-md" />
-          <img src="/blog3.jpg" alt="Inspiration 3" className="w-full aspect-square rounded-lg shadow-md" />
+          <img
+            src="/blog1.jpg"
+            alt="Inspiration 1"
+            className="w-full aspect-square rounded-lg shadow-md"
+          />
+          <img
+            src="/blog2.jpg"
+            alt="Inspiration 2"
+            className="w-full aspect-square rounded-lg shadow-md"
+          />
+          <img
+            src="/blog3.jpg"
+            alt="Inspiration 3"
+            className="w-full aspect-square rounded-lg shadow-md"
+          />
         </div>
       </main>
 
       {/* Step 2 Filters + Results */}
       {showFilters && (
-        <section ref={step2Ref} className="bg-white py-8 px-4 flex flex-col items-center">
+        <section
+          ref={step2Ref}
+          className="bg-white py-8 px-4 flex flex-col items-center"
+        >
           <div className="w-full max-w-6xl bg-white rounded-lg shadow-lg p-6 space-y-6">
             <h2 className="text-xl font-bold text-gray-700">Step 2: Filters</h2>
-            <div className="grid grid-cols-2 gap-4">
+
+            <div className="flex gap-6 items-center">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={directOnly}
+                  onChange={() => setDirectOnly(!directOnly)}
+                />
+                Direct flights only
+              </label>
+
               <div>
-                <label className="text-sm font-medium block mb-1">Departure Start Time</label>
-                <input type="time" step="900" className="w-full p-2 border rounded" />
-              </div>
-              <div>
-                <label className="text-sm font-medium block mb-1">Departure End Time</label>
-                <input type="time" step="900" className="w-full p-2 border rounded" />
+                <label className="mr-2">Sort by:</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="border p-1 rounded"
+                >
+                  <option value="price">Price (lowest)</option>
+                  <option value="shortest">Shortest duration</option>
+                  <option value="longest">Longest duration</option>
+                </select>
               </div>
             </div>
           </div>
@@ -147,18 +240,15 @@ export default function Home() {
           {/* Step 3: Results */}
           <div className="w-full max-w-6xl bg-white rounded-lg shadow-lg p-6 mt-8">
             <h2 className="text-xl font-bold text-gray-700 mb-4">Step 3: Results</h2>
-
-            {flights && flights.length > 0 ? (
+            {flights.length > 0 ? (
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {flights.map((f, i) => (
                   <div key={i} className="bg-white rounded shadow p-2">
                     <h3 className="font-semibold text-sm">
-                      {/* Travelpayouts flight object shape can vary. Try common fields or fallback */}
-                      {(f.origin || f.origin_iata || f.origin_code) || "FROM"} → {(f.destination || f.destination_iata || f.destination_code) || "TO"}
+                      {f.origin} → {f.destination}
                     </h3>
                     <p className="text-xs text-gray-500">
-                      {/* departure_at or depart_date may be present */}
-                      {f.departure_at || f.departure || f.depart_at || ""} — ${f.price || f.value || "N/A"}
+                      {f.departure_at} — ${f.price}
                     </p>
                   </div>
                 ))}
