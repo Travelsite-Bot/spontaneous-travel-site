@@ -1,41 +1,25 @@
-// pages/api/airports.js
 export default async function handler(req, res) {
   const { q } = req.query;
 
   if (!q || q.length < 2) {
-    // return empty list (frontend handles)
     return res.status(200).json([]);
   }
 
   try {
-    const url = `https://autocomplete.travelpayouts.com/places2?term=${encodeURIComponent(q)}&locale=en`;
-    const response = await fetch(url);
+    const response = await fetch(
+      `https://autocomplete.travelpayouts.com/places2?term=${q}&locale=en&types[]=airport`
+    );
     const data = await response.json();
 
-    // Filter and simplify: prefer airports
-    const airports = (data || [])
-      .filter((item) => item.type === "airport")
-      .map((a) => ({
-        name: a.name,
-        code: a.code,
-        city: a.city_name || "",
-      }));
+    // Only return id + name for now
+    const airports = data.map((a) => ({
+      id: a.code,
+      name: `${a.name} (${a.code})`,
+    }));
 
-    // If there are no airport results but there are city results, offer cities too (fallback)
-    if (airports.length === 0) {
-      const cities = (data || [])
-        .filter((item) => item.type === "city")
-        .map((c) => ({
-          name: c.name,
-          code: c.code || c.name,
-          city: c.country_name || "",
-        }));
-      return res.status(200).json(cities);
-    }
-
-    return res.status(200).json(airports);
+    res.status(200).json(airports);
   } catch (error) {
     console.error("Airport autocomplete error:", error);
-    return res.status(500).json([]);
+    res.status(500).json({ error: "Failed to fetch airports" });
   }
 }
