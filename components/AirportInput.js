@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export default function AirportInput({ label, value, onChange }) {
   const [suggestions, setSuggestions] = useState([]);
-  const [query, setQuery] = useState(value);
+  const [query, setQuery] = useState(value || "");
 
   useEffect(() => {
     if (query.length < 2) {
@@ -20,8 +20,8 @@ export default function AirportInput({ label, value, onChange }) {
   }, [query]);
 
   const handleSelect = (airport) => {
-    onChange(airport.name);
-    setQuery(airport.name);
+    onChange(airport.code); // ✅ store IATA code (e.g. LHR)
+    setQuery(`${airport.name} (${airport.code})`); // Show readable name in input
     setSuggestions([]);
   };
 
@@ -39,11 +39,11 @@ export default function AirportInput({ label, value, onChange }) {
         <ul className="absolute z-10 bg-white border border-gray-300 rounded-md w-full mt-1 max-h-40 overflow-y-auto shadow-lg">
           {suggestions.map((airport) => (
             <li
-              key={airport.id}
+              key={airport.code}
               onClick={() => handleSelect(airport)}
               className="p-2 hover:bg-gray-100 cursor-pointer"
             >
-              {airport.name}
+              {airport.name} ({airport.code})
             </li>
           ))}
         </ul>
