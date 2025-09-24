@@ -96,7 +96,7 @@ export default function Home() {
         <title>spontaria — find travel by dates</title>
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Dancing+Script:wght@400;600&display=swap"
         />
       </Head>
 
@@ -106,25 +106,24 @@ export default function Home() {
       >
         {/* HEADER */}
         <header className="w-full px-6 py-6 flex items-center justify-between">
-          <div>
+          <div className="ml-[5%]"> {/* aligns with search box */}
             <h1
               style={{
                 fontFamily: "Inter, sans-serif",
                 fontWeight: 700,
-                fontSize: "2.6rem",
+                fontSize: "2.8rem",
                 color: "rgba(255,255,255,0.92)",
-                textShadow: "0 0 2px grey",
+                textShadow: "1px 1px 2px rgba(0,0,0,0.4), -1px -1px 2px rgba(255,255,255,0.3)",
               }}
             >
               spontaria
             </h1>
             <p
               style={{
-                fontFamily: "Inter, sans-serif",
+                fontFamily: "'Dancing Script', cursive",
                 fontWeight: 400,
-                fontStyle: "italic",
-                fontSize: "1.05rem",
-                color: "rgba(0,0,0,0.7)",
+                fontSize: "1.2rem",
+                color: "rgba(0,0,0,0.65)",
               }}
             >
               You have the when, let the where find you...
@@ -147,10 +146,11 @@ export default function Home() {
           </nav>
         </header>
 
-        {/* MAIN CONTENT — two columns */}
+        {/* MAIN CONTENT */}
         <main className="flex-grow flex flex-col md:flex-row justify-center gap-6 px-6 pb-12">
           {/* SEARCH BOX */}
           <div className="flex-1 max-w-3xl bg-white/10 backdrop-blur-sm rounded-xl p-6 shadow-xl border border-black/20">
+            {/* Tabs */}
             <div className="mb-4 flex gap-2">
               <button
                 className={`flex-1 px-4 py-2 text-sm font-medium rounded ${
@@ -174,6 +174,7 @@ export default function Home() {
               </button>
             </div>
 
+            {/* Search form */}
             <form onSubmit={handleSearch} className="space-y-4 font-sans">
               <AirportInput
                 placeholder="Departing from"
@@ -229,31 +230,37 @@ export default function Home() {
               </div>
 
               {/* Passenger counts */}
-              <div className="flex gap-3 mt-2">
-                <input
-                  name="adults"
-                  type="number"
-                  min="1"
-                  defaultValue="1"
-                  className="w-1/3 p-2 rounded border border-black/30"
-                  placeholder="Adults"
-                />
-                <input
-                  name="children"
-                  type="number"
-                  min="0"
-                  defaultValue="0"
-                  className="w-1/3 p-2 rounded border border-black/30"
-                  placeholder="Children"
-                />
-                <input
-                  name="infants"
-                  type="number"
-                  min="0"
-                  defaultValue="0"
-                  className="w-1/3 p-2 rounded border border-black/30"
-                  placeholder="Infants"
-                />
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <div>
+                  <label className="block text-sm mb-1">Adults</label>
+                  <input
+                    name="adults"
+                    type="number"
+                    min="1"
+                    defaultValue="1"
+                    className="w-full p-2 rounded border border-black/30"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Children</label>
+                  <input
+                    name="children"
+                    type="number"
+                    min="0"
+                    defaultValue="0"
+                    className="w-full p-2 rounded border border-black/30"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Infants</label>
+                  <input
+                    name="infants"
+                    type="number"
+                    min="0"
+                    defaultValue="0"
+                    className="w-full p-2 rounded border border-black/30"
+                  />
+                </div>
               </div>
 
               <button
@@ -269,11 +276,12 @@ export default function Home() {
           <aside className="w-full md:w-80">
             <div className="bg-white/6 rounded-lg p-4">
               <h4
-                className="text-2xl font-bold mb-2"
+                className="text-2xl italic mb-2"
                 style={{
                   fontFamily: "Inter, sans-serif",
+                  fontWeight: 600,
                   color: "rgba(255,255,255,0.92)",
-                  textShadow: "0 0 2px grey",
+                  textShadow: "1px 1px 2px rgba(0,0,0,0.4), -1px -1px 2px rgba(255,255,255,0.3)",
                 }}
               >
                 Your next adventure
@@ -298,7 +306,7 @@ export default function Home() {
             <div className="w-full max-w-6xl bg-white rounded-lg shadow-lg p-4 font-sans">
               <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
 
-              {/* Filters toolbar */}
+              {/* Filters */}
               <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
                 <label className="flex items-center gap-2">
                   <input
@@ -308,7 +316,6 @@ export default function Home() {
                   />
                   Direct only
                 </label>
-
                 <div>
                   <label className="mr-2">Sort:</label>
                   <select
@@ -321,7 +328,6 @@ export default function Home() {
                     <option value="longest">Longest duration</option>
                   </select>
                 </div>
-
                 <div className="flex items-center gap-2">
                   <label className="text-sm">Departure window</label>
                   <input
@@ -377,10 +383,7 @@ export default function Home() {
                       : "";
 
                     return (
-                      <div
-                        key={i}
-                        className="p-3 border rounded flex gap-3 items-start"
-                      >
+                      <div key={i} className="p-3 border rounded flex gap-3 items-start">
                         <div className="w-28 h-20 bg-gray-100 rounded flex items-center justify-center text-xs">
                           {destName}
                         </div>
@@ -390,9 +393,7 @@ export default function Home() {
                               <div className="font-semibold">
                                 {originName} → {destName}
                               </div>
-                              <div className="text-xs text-gray-500">
-                                {airlines}
-                              </div>
+                              <div className="text-xs text-gray-500">{airlines}</div>
                             </div>
                             <div className="text-right">
                               <div className="font-bold">${price}</div>
