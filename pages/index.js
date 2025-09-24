@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import AirportInput from "../components/airportInputs";
+import AirportInput from "../components/AirportInput"; // ✅ fixed filename
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
