@@ -1,61 +1,50 @@
-// components/airportinputs.js
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AirportInput({ label, value, onChange }) {
-  const [suggestions, setSuggestions] = useState([]);
-  const [query, setQuery] = useState(value || "");
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
 
-  useEffect(() => {
-    if (!query || query.length < 2) {
-      setSuggestions([]);
+  const handleInput = async (e) => {
+    const val = e.target.value;
+    setQuery(val);
+    onChange(val);
+
+    if (val.length < 2) {
+      setResults([]);
       return;
     }
 
-    let cancelled = false;
-    const fetchAirports = async () => {
-      try {
-        const res = await fetch(`/api/airports?q=${encodeURIComponent(query)}`);
-        const data = await res.json();
-        if (!cancelled) setSuggestions(data || []);
-      } catch (err) {
-        console.error("Error fetching airports:", err);
-      }
-    };
-
-    fetchAirports();
-    return () => {
-      cancelled = true;
-    };
-  }, [query]);
-
-  const handleSelect = (airport) => {
-    // send IATA code back to parent
-    onChange(airport.code);
-    // show friendly text in input
-    setQuery(`${airport.name} (${airport.code})`);
-    setSuggestions([]);
+    try {
+      const res = await fetch(`/api/airports?query=${val}`);
+      const data = await res.json();
+      setResults(data || []);
+    } catch (err) {
+      console.error("Error fetching airports", err);
+    }
   };
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium mb-1">{label}</label>
       <input
         type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Type an airport or city"
-        className="w-full rounded-lg border border-gray-300 p-2"
-        autoComplete="off"
+        value={query || value}
+        onChange={handleInput}
+        placeholder={label}
+        className="w-full p-2 border rounded"
       />
-      {suggestions.length > 0 && (
-        <ul className="absolute z-10 bg-white border border-gray-300 rounded-md w-full mt-1 max-h-44 overflow-y-auto shadow-lg">
-          {suggestions.map((airport) => (
+      {results.length > 0 && (
+        <ul className="absolute z-10 bg-white border rounded w-full mt-1 max-h-40 overflow-y-auto">
+          {results.map((airport, i) => (
             <li
-              key={airport.code}
-              onClick={() => handleSelect(airport)}
-              className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+              key={i}
+              className="px-2 py-1 hover:bg-gray-100 cursor-pointer"
+              onClick={() => {
+                onChange(airport.code);
+                setQuery(`${airport.city} (${airport.code})`);
+                setResults([]);
+              }}
             >
-              {airport.name} ({airport.code}) — {airport.city || ""}
+              {airport.city} ({airport.code})
             </li>
           ))}
         </ul>
