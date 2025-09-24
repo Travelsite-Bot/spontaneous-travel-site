@@ -106,7 +106,7 @@ export default function Home() {
       >
         {/* HEADER */}
         <header className="w-full px-6 py-6 flex items-center justify-between">
-          <div className="ml-[5%]"> {/* aligns with search box */}
+          <div className="ml-[5%] flex flex-col">
             <h1
               style={{
                 fontFamily: "Inter, sans-serif",
@@ -120,6 +120,7 @@ export default function Home() {
             </h1>
             <p
               style={{
+                marginLeft: "1.5rem", // 👈 moves slogan slightly to right
                 fontFamily: "'Dancing Script', cursive",
                 fontWeight: 400,
                 fontSize: "1.2rem",
@@ -272,20 +273,9 @@ export default function Home() {
             </form>
           </div>
 
-          {/* INSPIRATION IMAGES */}
+          {/* INSPIRATION IMAGES (NO TITLE) */}
           <aside className="w-full md:w-80">
             <div className="bg-white/6 rounded-lg p-4">
-              <h4
-                className="text-2xl italic mb-2"
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontWeight: 600,
-                  color: "rgba(255,255,255,0.92)",
-                  textShadow: "1px 1px 2px rgba(0,0,0,0.4), -1px -1px 2px rgba(255,255,255,0.3)",
-                }}
-              >
-                Your next adventure
-              </h4>
               <img
                 src="/blog1.jpg"
                 alt=""
