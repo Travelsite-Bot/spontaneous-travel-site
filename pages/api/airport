@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     );
     const data = await response.json();
 
-    // Only return id + name for now
+    // Simplify results for frontend
     const airports = data.map((a) => ({
       id: a.code,
       name: `${a.name} (${a.code})`,
