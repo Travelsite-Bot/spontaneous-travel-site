@@ -96,7 +96,7 @@ export default function Home() {
         <title>spontaria — find travel by dates</title>
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Pacifico&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
         />
       </Head>
 
@@ -113,23 +113,25 @@ export default function Home() {
                 fontWeight: 700,
                 fontSize: "2.6rem",
                 color: "rgba(255,255,255,0.92)",
+                textShadow: "0 0 2px grey",
               }}
             >
               spontaria
             </h1>
             <p
               style={{
-                fontFamily: "Pacifico, cursive",
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 400,
                 fontStyle: "italic",
                 fontSize: "1.05rem",
-                color: "#000",
+                color: "rgba(0,0,0,0.7)",
               }}
             >
-              When you have the when, let the where find you...
+              You have the when, let the where find you...
             </p>
           </div>
 
-          <nav className="flex items-center gap-4 text-sm">
+          <nav className="flex items-center gap-4 text-sm font-sans">
             <a href="/inspiration" className="text-white/90 hover:underline">
               Inspiration
             </a>
@@ -148,19 +150,23 @@ export default function Home() {
         {/* MAIN CONTENT — two columns */}
         <main className="flex-grow flex flex-col md:flex-row justify-center gap-6 px-6 pb-12">
           {/* SEARCH BOX */}
-          <div className="flex-1 max-w-3xl bg-white/10 backdrop-blur-sm rounded-xl p-6 shadow-xl border border-black/40">
+          <div className="flex-1 max-w-3xl bg-white/10 backdrop-blur-sm rounded-xl p-6 shadow-xl border border-black/20">
             <div className="mb-4 flex gap-2">
               <button
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded border border-black ${
-                  tab === "adventure" ? "bg-green-700 text-white" : "bg-white/20 text-white"
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${
+                  tab === "adventure"
+                    ? "bg-green-700 text-white"
+                    : "bg-green-200 text-green-900"
                 }`}
                 onClick={() => setTab("adventure")}
               >
                 ✈️ Adventure Anywhere
               </button>
               <button
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded border border-black ${
-                  tab === "select" ? "bg-green-700 text-white" : "bg-white/20 text-white"
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${
+                  tab === "select"
+                    ? "bg-green-700 text-white"
+                    : "bg-green-200 text-green-900"
                 }`}
                 onClick={() => setTab("select")}
               >
@@ -168,22 +174,40 @@ export default function Home() {
               </button>
             </div>
 
-            <form onSubmit={handleSearch} className="space-y-4">
-              <AirportInput label="From airport" value={origin} onChange={setOrigin} />
+            <form onSubmit={handleSearch} className="space-y-4 font-sans">
+              <AirportInput
+                placeholder="Departing from"
+                value={origin}
+                onChange={setOrigin}
+              />
               {tab === "select" && (
-                <AirportInput label="To airport" value={destination} onChange={setDestination} />
+                <AirportInput
+                  placeholder="Arriving to"
+                  value={destination}
+                  onChange={setDestination}
+                />
               )}
 
               {/* One-way / Return */}
               <div className="flex items-center gap-6 mt-1">
-                <label className="flex items-center gap-2 text-white/95 border border-black px-2 py-1 rounded">
-                  <input type="radio" checked={oneWay} onChange={() => setOneWay(true)} />
+                <button
+                  type="button"
+                  onClick={() => setOneWay(true)}
+                  className={`px-3 py-1 rounded ${
+                    oneWay ? "bg-green-700 text-white" : "bg-green-200 text-green-900"
+                  }`}
+                >
                   One-way
-                </label>
-                <label className="flex items-center gap-2 text-white/95 border border-black px-2 py-1 rounded">
-                  <input type="radio" checked={!oneWay} onChange={() => setOneWay(false)} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOneWay(false)}
+                  className={`px-3 py-1 rounded ${
+                    !oneWay ? "bg-green-700 text-white" : "bg-green-200 text-green-900"
+                  }`}
+                >
                   Return
-                </label>
+                </button>
               </div>
 
               {/* Dates */}
@@ -192,14 +216,14 @@ export default function Home() {
                   selected={departDate}
                   onChange={(date) => setDepartDate(date)}
                   placeholderText="Departure date"
-                  className="w-full p-2 rounded border border-black"
+                  className="w-full p-2 rounded border border-black/30"
                 />
                 {!oneWay && (
                   <DatePicker
                     selected={returnDate}
                     onChange={(date) => setReturnDate(date)}
                     placeholderText="Return date"
-                    className="w-full p-2 rounded border border-black"
+                    className="w-full p-2 rounded border border-black/30"
                   />
                 )}
               </div>
@@ -211,7 +235,7 @@ export default function Home() {
                   type="number"
                   min="1"
                   defaultValue="1"
-                  className="w-1/3 p-2 rounded border border-black"
+                  className="w-1/3 p-2 rounded border border-black/30"
                   placeholder="Adults"
                 />
                 <input
@@ -219,7 +243,7 @@ export default function Home() {
                   type="number"
                   min="0"
                   defaultValue="0"
-                  className="w-1/3 p-2 rounded border border-black"
+                  className="w-1/3 p-2 rounded border border-black/30"
                   placeholder="Children"
                 />
                 <input
@@ -227,14 +251,14 @@ export default function Home() {
                   type="number"
                   min="0"
                   defaultValue="0"
-                  className="w-1/3 p-2 rounded border border-black"
+                  className="w-1/3 p-2 rounded border border-black/30"
                   placeholder="Infants"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 bg-green-700 text-white rounded font-semibold border border-black"
+                className="w-full py-3 bg-green-700 text-white rounded font-semibold"
               >
                 Search
               </button>
@@ -244,16 +268,25 @@ export default function Home() {
           {/* INSPIRATION IMAGES */}
           <aside className="w-full md:w-80">
             <div className="bg-white/6 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-white/95 mb-2">Inspiration</h4>
+              <h4
+                className="text-2xl font-bold mb-2"
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  color: "rgba(255,255,255,0.92)",
+                  textShadow: "0 0 2px grey",
+                }}
+              >
+                Your next adventure
+              </h4>
               <img
                 src="/blog1.jpg"
                 alt=""
-                className="w-full h-36 object-cover rounded mb-2 border border-black"
+                className="w-full h-36 object-cover rounded mb-2 border border-black/20"
               />
               <img
                 src="/blog2.jpg"
                 alt=""
-                className="w-full h-36 object-cover rounded border border-black"
+                className="w-full h-36 object-cover rounded border border-black/20"
               />
             </div>
           </aside>
@@ -262,7 +295,7 @@ export default function Home() {
         {/* RESULTS */}
         {showResults && (
           <section ref={stepRef} className="w-full flex justify-center pb-12 px-6">
-            <div className="w-full max-w-6xl bg-white rounded-lg shadow-lg p-4">
+            <div className="w-full max-w-6xl bg-white rounded-lg shadow-lg p-4 font-sans">
               <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
 
               {/* Filters toolbar */}
@@ -387,6 +420,9 @@ export default function Home() {
       </div>
 
       <style jsx global>{`
+        body {
+          font-family: 'Inter', sans-serif;
+        }
         .react-datepicker__header {
           background: #166534;
           border-bottom: none;
