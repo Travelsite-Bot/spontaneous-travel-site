@@ -1,240 +1,292 @@
-// pages/index.js
-import Head from "next/head";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import AirportInput from "../components/AirportInput";
-import PassengerSelect from "../components/PassengerSelect";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-function formatDDMM(date) {
-  if (!date) return "";
-  const d = new Date(date);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
-
 export default function Home() {
-  const [showResults, setShowResults] = useState(false);
   const [tab, setTab] = useState("adventure");
   const [flights, setFlights] = useState([]);
   const [oneWay, setOneWay] = useState(true);
   const [departDate, setDepartDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
-  const [origins, setOrigins] = useState([]);
+  const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [passengers, setPassengers] = useState({ adults: 1, children: 0, infants: 0 });
+  const [showResults, setShowResults] = useState(false);
   const stepRef = useRef(null);
 
-  const images = ["/blog1.jpg", "/blog2.jpg", "/blog3.jpg", "/blog4.jpg"];
-
-  const originParam = Array.isArray(origins) ? origins.join(",") : origins || "";
-
-  const handleSearch = async (e) => {
-    e && e.preventDefault();
-    if (!originParam) return alert("Please select at least one departure airport.");
-    if (!departDate) return alert("Please choose a departure date.");
-
-    try {
-      const params = new URLSearchParams();
-      params.append("origin", originParam);
-      if (destination) params.append("destination", destination);
-      params.append("depart_date", departDate.toISOString().split("T")[0]);
-
-      const res = await fetch(`/api/flights?${params.toString()}`);
-      const data = await res.json();
-      setFlights(data.data || []);
-      setShowResults(true);
-      setTimeout(() => stepRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
-    } catch (err) {
-      console.error("Search error:", err);
-      setFlights([]);
-      setShowResults(true);
-    }
+  // helper for dd/mm/yyyy formatting
+  const formatDDMM = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
-  // simple auto-scroll for slider
-  const sliderRef = useRef(null);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (sliderRef.current) {
-        sliderRef.current.scrollBy({ left: 250, behavior: "smooth" });
-        if (
-          sliderRef.current.scrollLeft + sliderRef.current.clientWidth >=
-          sliderRef.current.scrollWidth
-        ) {
-          sliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        }
-      }
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
+    if (!origin) return;
+
+    try {
+      const res = await fetch(
+        `/api/flights?origin=${origin}&destination=${destination}&depart_date=${
+          departDate ? departDate.toISOString().split("T")[0] : ""
+        }`
+      );
+      const data = await res.json();
+      setFlights(data.data || []);
+    } catch (err) {
+      console.error("Error fetching flights", err);
+      setFlights([]);
+    }
+
+    setShowResults(true);
+    setTimeout(() => {
+      stepRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
+  };
 
   return (
-    <>
-      <Head>
-        <title>spontaria — find travel by dates</title>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Dancing+Script:wght@400;600&display=swap"
-        />
-      </Head>
+    <div
+      className="min-h-screen bg-cover bg-center flex flex-col"
+      style={{ backgroundImage: "url('/HomePage.jpg')" }}
+    >
+      {/* Header */}
+      <header className="flex flex-col items-start p-6">
+        <h1 className="text-3xl font-bold text-gray-400 lowercase tracking-wide">
+          spontaria
+        </h1>
+        <p className="italic text-gray-700 mt-1 ml-2 text-base">
+          You have the when, let the where find you...
+        </p>
+      </header>
 
-      <div
-        className="min-h-screen bg-cover bg-center flex flex-col"
-        style={{ backgroundImage: "url('/HomePage.jpg')" }}
-      >
-        {/* header */}
-        <header className="w-full px-6 py-6 flex items-center justify-between">
-          <div>
-            <h1
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 700,
-                fontSize: "2.6rem",
-                color: "#C0C0C0", // silver pastel
-              }}
+      {/* Main Search */}
+      <main className="flex-grow flex items-center justify-center relative p-6">
+        <div className="w-full max-w-xl bg-white/90 p-6 rounded-xl shadow-md z-10">
+          {/* Adventure / Select Tabs */}
+          <div className="flex mb-4 rounded overflow-hidden">
+            <button
+              className={`flex-1 px-4 py-2 text-sm font-medium ${
+                tab === "adventure"
+                  ? "bg-green-700 text-white"
+                  : "bg-green-200 text-gray-700"
+              }`}
+              onClick={() => setTab("adventure")}
             >
-              spontaria
-            </h1>
-            <div
-              style={{
-                fontFamily: "'Dancing Script', cursive",
-                fontSize: "1.1rem",
-                marginTop: "4px",
-                marginLeft: "12px", // indent
-                color: "darkgrey", // slogan
-              }}
+              ✈️ Adventure Anywhere
+            </button>
+            <button
+              className={`flex-1 px-4 py-2 text-sm font-medium ${
+                tab === "select"
+                  ? "bg-green-700 text-white"
+                  : "bg-green-200 text-gray-700"
+              }`}
+              onClick={() => setTab("select")}
             >
-              You have the when, let the where find you...
-            </div>
+              📍 Select Destination
+            </button>
           </div>
 
-          <nav className="flex items-center gap-4 text-sm font-sans">
-            <a href="/inspiration" className="text-white/90 hover:underline" style={{ fontFamily: "Inter, sans-serif" }}>
-              Inspiration
-            </a>
-            <a href="#" className="text-white/90">📷</a>
-            <a href="#" className="text-white/90">📘</a>
-            <a href="#" className="text-white/90">🎵</a>
-          </nav>
-        </header>
+          {/* Search Form */}
+          <form onSubmit={handleSearch} className="space-y-4">
+            <AirportInput
+              label="Departing Airport(s)"
+              value={origin}
+              onChange={(val) => setOrigin(val)}
+            />
+            {tab === "select" && (
+              <AirportInput
+                label="Destination Airport"
+                value={destination}
+                onChange={(val) => setDestination(val)}
+              />
+            )}
 
-        {/* search area */}
-        <main className="flex-grow flex flex-col items-center px-6 pb-12">
-          <div className="w-full max-w-3xl bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg" style={{ border: "1px solid rgba(0,0,0,0.06)" }}>
-            {/* tabs */}
-            <div className="mb-3 flex gap-2">
+            {/* One way / return */}
+            <div className="flex gap-4 items-center">
               <button
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${tab === "adventure" ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}
-                onClick={() => { setTab("adventure"); setOrigins([]); setDestination(""); }}
+                type="button"
+                onClick={() => setOneWay(true)}
+                className={`px-3 py-1 rounded ${
+                  oneWay ? "bg-green-700 text-white" : "bg-green-200"
+                }`}
               >
-                ✈️ Adventure Anywhere
+                One-way
               </button>
               <button
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${tab === "select" ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}
-                onClick={() => { setTab("select"); setOrigins([]); setDestination(""); }}
+                type="button"
+                onClick={() => setOneWay(false)}
+                className={`px-3 py-1 rounded ${
+                  !oneWay ? "bg-green-700 text-white" : "bg-green-200"
+                }`}
               >
-                📍 Select Destination
+                Return
               </button>
             </div>
 
-            {/* inputs */}
-            <form onSubmit={handleSearch} className="space-y-3">
-              <AirportInput
-                label="Departing Airport(s)"
-                placeholder="Departing Airport(s)"
-                value={tab === "adventure" ? origins : origins[0] || ""}
-                onChange={(v) => {
-                  if (tab === "adventure") {
-                    setOrigins(Array.isArray(v) ? v : [v].filter(Boolean));
-                  } else {
-                    setOrigins(v ? [v] : []);
-                  }
-                }}
-                multiple={tab === "adventure"}
+            {/* Dates + Passengers */}
+            <div className="flex gap-2">
+              <DatePicker
+                selected={departDate}
+                onChange={(date) => setDepartDate(date)}
+                placeholderText="Departure date"
+                dateFormat="dd/MM/yyyy"
+                className="w-full p-2 border rounded"
               />
-
-              {tab === "select" && (
-                <AirportInput
-                  label="Arriving to"
-                  placeholder="Arriving to"
-                  value={destination}
-                  onChange={(v) => setDestination(v)}
-                  multiple={false}
+              {!oneWay && (
+                <DatePicker
+                  selected={returnDate}
+                  onChange={(date) => setReturnDate(date)}
+                  placeholderText="Return date"
+                  dateFormat="dd/MM/yyyy"
+                  className="w-full p-2 border rounded"
                 />
               )}
+            </div>
 
-              <div className="flex items-center gap-2">
-                <button type="button" onClick={() => setOneWay(true)} className={`px-3 py-1 rounded ${oneWay ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}>One-way</button>
-                <button type="button" onClick={() => setOneWay(false)} className={`px-3 py-1 rounded ${!oneWay ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}>Return</button>
-              </div>
+            <div>
+              <label className="block text-sm mb-1">Passengers</label>
+              <select className="w-full p-2 border rounded">
+                <option>1 Adult</option>
+                <option>2 Adults</option>
+                <option>3 Adults</option>
+                <option>Adults + Children</option>
+                <option>Adults + Infants</option>
+              </select>
+            </div>
 
-              <div className="flex gap-2">
-                <DatePicker
-                  selected={departDate}
-                  onChange={(date) => setDepartDate(date)}
-                  placeholderText="Departure date"
-                  dateFormat="dd/MM/yyyy"
-                  className="w-full p-2 rounded border border-black/10 bg-white/90"
+            <button
+              type="submit"
+              className="bg-green-700 text-white w-full py-2 rounded"
+            >
+              Search
+            </button>
+          </form>
+        </div>
+      </main>
+
+      {/* Inspiration slider */}
+      <section className="w-full flex justify-center py-6">
+        <div className="flex gap-4 overflow-x-auto w-full max-w-4xl px-4">
+          {["/blog1.jpg", "/blog2.jpg", "/blog3.jpg"].map((img, i) => (
+            <img
+              key={i}
+              src={img}
+              alt={`Inspiration ${i + 1}`}
+              className="w-72 h-48 object-cover rounded-lg shadow-md flex-shrink-0"
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Results */}
+      {showResults && (
+        <section ref={stepRef} className="w-full flex justify-center pb-12 px-6">
+          <div className="w-full max-w-6xl bg-white/95 rounded-lg shadow-lg p-4">
+            <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
+
+            {/* Filter bar */}
+            <div className="flex flex-wrap items-center gap-3 mb-4 text-sm">
+              <label className="flex items-center gap-1">
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setFlights((prev) => prev.filter((f) => f.direct));
+                    } else {
+                      handleSearch();
+                    }
+                  }}
                 />
-                {!oneWay && (
-                  <DatePicker
-                    selected={returnDate}
-                    onChange={(date) => setReturnDate(date)}
-                    placeholderText="Return date"
-                    dateFormat="dd/MM/yyyy"
-                    className="w-full p-2 rounded border border-black/10 bg-white/90"
-                  />
-                )}
-                <PassengerSelect value={passengers} onChange={setPassengers} />
-              </div>
+                Direct only
+              </label>
 
-              <div>
-                <button type="submit" className="w-full py-3 bg-green-700 text-white rounded font-semibold">Search</button>
-              </div>
-            </form>
-          </div>
+              <select
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setFlights((prev) => {
+                    const sorted = [...prev];
+                    if (val === "price_low") sorted.sort((a, b) => a.price - b.price);
+                    if (val === "price_high") sorted.sort((a, b) => b.price - a.price);
+                    if (val === "date")
+                      sorted.sort(
+                        (a, b) =>
+                          new Date(a.departure_at) - new Date(b.departure_at)
+                      );
+                    return sorted;
+                  });
+                }}
+                className="border rounded p-1"
+              >
+                <option value="">Sort by</option>
+                <option value="price_low">Price (Low → High)</option>
+                <option value="price_high">Price (High → Low)</option>
+                <option value="date">Earliest Departures</option>
+              </select>
 
-          {/* slider divider */}
-          <div ref={sliderRef} className="mt-8 flex gap-3 max-w-5xl overflow-x-auto scrollbar-hide">
-            {images.map((src, i) => (
-              <img key={i} src={src} alt="" className="h-48 w-80 object-cover rounded shadow flex-shrink-0" />
-            ))}
-          </div>
-        </main>
+              <select
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (!val) return handleSearch();
+                  setFlights((prev) =>
+                    prev.filter((f) => {
+                      const hour = new Date(f.departure_at).getHours();
+                      if (val === "morning") return hour < 12;
+                      if (val === "afternoon") return hour >= 12 && hour < 18;
+                      if (val === "evening") return hour >= 18;
+                      return true;
+                    })
+                  );
+                }}
+                className="border rounded p-1"
+              >
+                <option value="">Departure time</option>
+                <option value="morning">Morning (0–12h)</option>
+                <option value="afternoon">Afternoon (12–18h)</option>
+                <option value="evening">Evening (18h+)</option>
+              </select>
+            </div>
 
-        {/* results */}
-        {showResults && (
-          <section ref={stepRef} className="w-full flex justify-center pb-12 px-6">
-            <div className="w-full max-w-6xl bg-white/95 rounded-lg shadow-lg p-4">
-              <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
-              {flights.length > 0 ? (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {flights.map((f, i) => (
-                    <div key={i} className="p-3 border rounded flex gap-3 items-start bg-white/98">
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <div>
-                            <div className="font-semibold">{f.origin} → {f.destination}</div>
+            {/* Flights */}
+            {flights.length > 0 ? (
+              <div className="grid md:grid-cols-2 gap-4">
+                {flights.map((f, i) => (
+                  <div
+                    key={i}
+                    className="p-3 border rounded flex gap-3 items-start bg-white/98"
+                  >
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <div>
+                          <div className="font-semibold">
+                            {f.origin} → {f.destination}
                           </div>
-                          <div className="text-right">
-                            <div className="font-bold">${f.price}</div>
-                            <div className="text-xs text-gray-500">{f.departure_at ? formatDDMM(f.departure_at) : ""}</div>
+                          {!f.direct && (
+                            <div className="text-xs text-gray-500">1+ stops</div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold">${f.price}</div>
+                          <div className="text-xs text-gray-500">
+                            {f.departure_at ? formatDDMM(f.departure_at) : ""}
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">No results. Try a different date or airport.</div>
-              )}
-            </div>
-          </section>
-        )}
-      </div>
-    </>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                No results found.
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }
