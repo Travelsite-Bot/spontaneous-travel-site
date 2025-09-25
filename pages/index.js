@@ -205,11 +205,71 @@ export default function Home() {
           </div>
         </main>
 
-        {/* results */}
+        {/* results with filters */}
         {showResults && (
           <section ref={stepRef} className="w-full flex justify-center pb-12 px-6">
             <div className="w-full max-w-6xl bg-white/95 rounded-lg shadow-lg p-4">
               <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
+
+              {/* filter bar */}
+              <div className="flex flex-wrap items-center gap-3 mb-4 text-sm">
+                <label className="flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFlights((prev) => prev.filter((f) => f.direct));
+                      } else {
+                        handleSearch(); // reload original
+                      }
+                    }}
+                  />
+                  Direct only
+                </label>
+
+                <select
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFlights((prev) => {
+                      const sorted = [...prev];
+                      if (val === "price_low") sorted.sort((a, b) => a.price - b.price);
+                      if (val === "price_high") sorted.sort((a, b) => b.price - a.price);
+                      if (val === "date") sorted.sort((a, b) => new Date(a.departure_at) - new Date(b.departure_at));
+                      return sorted;
+                    });
+                  }}
+                  className="border rounded p-1"
+                >
+                  <option value="">Sort by</option>
+                  <option value="price_low">Price (Low → High)</option>
+                  <option value="price_high">Price (High → Low)</option>
+                  <option value="date">Earliest Departures</option>
+                </select>
+
+                <select
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (!val) return handleSearch();
+                    setFlights((prev) =>
+                      prev.filter((f) => {
+                        const hour = new Date(f.departure_at).getHours();
+                        if (val === "morning") return hour < 12;
+                        if (val === "afternoon") return hour >= 12 && hour < 18;
+                        if (val === "evening") return hour >= 18;
+                        return true;
+                      })
+                    );
+                  }}
+                  className="border rounded p-1"
+                >
+                  <option value="">Departure time</option>
+                  <option value="morning">Morning (0–12h)</option>
+                  <option value="afternoon">Afternoon (12–18h)</option>
+                  <option value="evening">Evening (18h+)</option>
+                </select>
+              </div>
+
+              {/* flights */}
               {flights.length > 0 ? (
                 <div className="grid md:grid-cols-2 gap-4">
                   {flights.map((f, i) => (
@@ -217,11 +277,16 @@ export default function Home() {
                       <div className="flex-1">
                         <div className="flex justify-between">
                           <div>
-                            <div className="font-semibold">{f.origin} → {f.destination}</div>
+                            <div className="font-semibold">
+                              {f.origin} → {f.destination}
+                            </div>
+                            {!f.direct && <div className="text-xs text-gray-500">1+ stops</div>}
                           </div>
                           <div className="text-right">
                             <div className="font-bold">${f.price}</div>
-                            <div className="text-xs text-gray-500">{f.departure_at ? formatDDMM(f.departure_at) : ""}</div>
+                            <div className="text-xs text-gray-500">
+                              {f.departure_at ? formatDDMM(f.departure_at) : ""}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -229,7 +294,9 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">No results. Try a different date or airport.</div>
+                <div className="text-center py-8 text-gray-500">
+                  No results. Try a different date or airport.
+                </div>
               )}
             </div>
           </section>
@@ -238,96 +305,3 @@ export default function Home() {
     </>
   );
 }
-{/* results */}
-{showResults && (
-  <section ref={stepRef} className="w-full flex justify-center pb-12 px-6">
-    <div className="w-full max-w-6xl bg-white/95 rounded-lg shadow-lg p-4">
-      <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
-
-      {/* filter bar */}
-      <div className="flex flex-wrap items-center gap-3 mb-4 text-sm">
-        <label className="flex items-center gap-1">
-          <input type="checkbox" onChange={(e) => {
-            if (e.target.checked) {
-              setFlights((prev) => prev.filter((f) => f.direct));
-            } else {
-              handleSearch(); // reload original
-            }
-          }} />
-          Direct only
-        </label>
-
-        <select
-          onChange={(e) => {
-            const val = e.target.value;
-            setFlights((prev) => {
-              const sorted = [...prev];
-              if (val === "price_low") sorted.sort((a, b) => a.price - b.price);
-              if (val === "price_high") sorted.sort((a, b) => b.price - a.price);
-              if (val === "date") sorted.sort((a, b) => new Date(a.departure_at) - new Date(b.departure_at));
-              return sorted;
-            });
-          }}
-          className="border rounded p-1"
-        >
-          <option value="">Sort by</option>
-          <option value="price_low">Price (Low → High)</option>
-          <option value="price_high">Price (High → Low)</option>
-          <option value="date">Earliest Departures</option>
-        </select>
-
-        <select
-          onChange={(e) => {
-            const val = e.target.value;
-            if (!val) return handleSearch();
-            setFlights((prev) =>
-              prev.filter((f) => {
-                const hour = new Date(f.departure_at).getHours();
-                if (val === "morning") return hour < 12;
-                if (val === "afternoon") return hour >= 12 && hour < 18;
-                if (val === "evening") return hour >= 18;
-                return true;
-              })
-            );
-          }}
-          className="border rounded p-1"
-        >
-          <option value="">Departure time</option>
-          <option value="morning">Morning (0–12h)</option>
-          <option value="afternoon">Afternoon (12–18h)</option>
-          <option value="evening">Evening (18h+)</option>
-        </select>
-      </div>
-
-      {/* flights */}
-      {flights.length > 0 ? (
-        <div className="grid md:grid-cols-2 gap-4">
-          {flights.map((f, i) => (
-            <div key={i} className="p-3 border rounded flex gap-3 items-start bg-white/98">
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <div>
-                    <div className="font-semibold">
-                      {f.origin} → {f.destination}
-                    </div>
-                    {!f.direct && <div className="text-xs text-gray-500">1+ stops</div>}
-                  </div>
-                  <div className="text-right">
-                    <div className="font-bold">${f.price}</div>
-                    <div className="text-xs text-gray-500">
-                      {f.departure_at ? formatDDMM(f.departure_at) : ""}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-8 text-gray-500">
-          No results. Try a different date or airport.
-        </div>
-      )}
-    </div>
-  </section>
-)}
