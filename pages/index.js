@@ -1,7 +1,8 @@
 // pages/index.js
 import Head from "next/head";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import AirportInput from "../components/AirportInput";
+import PassengerSelect from "../components/PassengerSelect";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -23,9 +24,10 @@ export default function Home() {
   const [returnDate, setReturnDate] = useState(null);
   const [origins, setOrigins] = useState([]);
   const [destination, setDestination] = useState("");
+  const [passengers, setPassengers] = useState({ adults: 1, children: 0, infants: 0 });
   const stepRef = useRef(null);
 
-  const images = ["/blog1.jpg", "/blog2.jpg", "/blog3.jpg"];
+  const images = ["/blog1.jpg", "/blog2.jpg", "/blog3.jpg", "/blog4.jpg"];
 
   const originParam = Array.isArray(origins) ? origins.join(",") : origins || "";
 
@@ -52,6 +54,23 @@ export default function Home() {
     }
   };
 
+  // simple auto-scroll for slider
+  const sliderRef = useRef(null);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (sliderRef.current) {
+        sliderRef.current.scrollBy({ left: 250, behavior: "smooth" });
+        if (
+          sliderRef.current.scrollLeft + sliderRef.current.clientWidth >=
+          sliderRef.current.scrollWidth
+        ) {
+          sliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        }
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <Head>
@@ -74,7 +93,7 @@ export default function Home() {
                 fontFamily: "Inter, sans-serif",
                 fontWeight: 700,
                 fontSize: "2.6rem",
-                color: "rgba(255,255,255,0.75)",
+                color: "#C0C0C0", // silver pastel
               }}
             >
               spontaria
@@ -84,7 +103,8 @@ export default function Home() {
                 fontFamily: "'Dancing Script', cursive",
                 fontSize: "1.1rem",
                 marginTop: "4px",
-                color: "rgba(255,255,255,0.85)",
+                marginLeft: "12px", // indent
+                color: "darkgrey", // slogan
               }}
             >
               You have the when, let the where find you...
@@ -123,8 +143,8 @@ export default function Home() {
             {/* inputs */}
             <form onSubmit={handleSearch} className="space-y-3">
               <AirportInput
-                label="Departing from"
-                placeholder={tab === "adventure" ? "Type one or more airports" : "Departing from"}
+                label="Departing Airport(s)"
+                placeholder="Departing Airport(s)"
                 value={tab === "adventure" ? origins : origins[0] || ""}
                 onChange={(v) => {
                   if (tab === "adventure") {
@@ -168,15 +188,7 @@ export default function Home() {
                     className="w-full p-2 rounded border border-black/10 bg-white/90"
                   />
                 )}
-              </div>
-
-              <div>
-                <div className="text-sm mb-1">Passengers</div>
-                <div className="flex gap-2">
-                  <input name="adults" type="number" min="1" defaultValue="1" className="w-1/3 p-2 rounded border border-black/10" />
-                  <input name="children" type="number" min="0" defaultValue="0" className="w-1/3 p-2 rounded border border-black/10" />
-                  <input name="infants" type="number" min="0" defaultValue="0" className="w-1/3 p-2 rounded border border-black/10" />
-                </div>
+                <PassengerSelect value={passengers} onChange={setPassengers} />
               </div>
 
               <div>
@@ -186,9 +198,9 @@ export default function Home() {
           </div>
 
           {/* slider divider */}
-          <div className="mt-8 flex gap-3 max-w-4xl">
+          <div ref={sliderRef} className="mt-8 flex gap-3 max-w-5xl overflow-x-auto scrollbar-hide">
             {images.map((src, i) => (
-              <img key={i} src={src} alt="" className="h-32 w-1/3 object-cover rounded shadow" />
+              <img key={i} src={src} alt="" className="h-48 w-80 object-cover rounded shadow flex-shrink-0" />
             ))}
           </div>
         </main>
