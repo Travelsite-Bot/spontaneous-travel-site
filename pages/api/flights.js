@@ -1,8 +1,6 @@
 // pages/api/flights.js
-// Backend proxy for flight data. Supports:
-// - Select Destination: origin + destination -> prices_for_dates (per origin if multiple)
-// - Adventure Anywhere: origin only -> get_special_offers (per origin if multiple)
-// Accepts origin as single IATA (LON) or comma-separated list (LON,MAN,LGW)
+// Backend proxy for Travelpayouts flight data.
+// Normalizes fields for consistent frontend use.
 
 export default async function handler(req, res) {
   try {
@@ -33,12 +31,28 @@ export default async function handler(req, res) {
       try {
         json = JSON.parse(txt);
       } catch (e) {
-        // not JSON
+        console.error("Non-JSON response:", txt.slice(0, 200));
       }
       return { ok: r.ok, status: r.status, json, text: txt };
     };
 
-    // If destination provided -> use prices_for_dates for each origin, combine results
+    // --- Normalize helper ---
+    const normalize = (it) => {
+      return {
+        origin: it.origin || it.from || "",
+        destination: it.destination || it.to || "",
+        price: Number(it.price || it.value || 0),
+        departure_at:
+          it.departure_at ||
+          it.departure ||
+          (it.depart_date ? `${it.depart_date}T00:00:00Z` : null),
+        direct: it.transfers === 0 || it.direct || false,
+        airline: it.airline || "",
+        flight_number: it.flight_number || "",
+      };
+    };
+
+    // If destination provided -> use prices_for_dates
     if (destination) {
       let combined = [];
       for (const og of origins) {
@@ -52,31 +66,32 @@ export default async function handler(req, res) {
         const { ok, status, json, text } = await fetchWithToken(url);
 
         if (!ok) {
-          // If one origin fails, log and continue
           console.error("Flights API error", status, text);
           continue;
         }
 
-        // smartly merge: many Travelpayouts endpoints return `.data` as array
         const items = (json && json.data) || [];
-        combined = combined.concat(items);
+        combined = combined.concat(items.map(normalize));
       }
 
-      // Deduplicate by destination+departure_at+price heuristics, keep lowest price per destination/time
+      // Deduplicate
       const best = {};
       combined.forEach((it) => {
-        const key = `${it.origin}_${it.destination}_${it.departure_at || it.departure}`;
-        const price = Number(it.price || it.value || 0);
-        if (!best[key] || (price && price < best[key].price)) {
-          best[key] = { ...it, price: price || (it.price || it.value) };
+        const key = `${it.origin}_${it.destination}_${it.departure_at}`;
+        if (!best[key] || it.price < best[key].price) {
+          best[key] = it;
         }
       });
 
       const out = Object.values(best);
-      return res.status(200).json({ source: "prices_for_dates", count: out.length, data: out });
+      return res.status(200).json({
+        source: "prices_for_dates",
+        count: out.length,
+        data: out,
+      });
     }
 
-    // No destination -> Adventure Anywhere -> use get_special_offers per origin and combine
+    // No destination -> Adventure Anywhere
     let combinedOffers = [];
     for (const og of origins) {
       const params = new URLSearchParams();
@@ -93,15 +108,19 @@ export default async function handler(req, res) {
       }
 
       const items = (json && json.data) || [];
-      // Annotate with originUsed so UI can show which origin produced the deal
-      const annotated = items.map((it) => ({ ...it, origin_searched: og }));
+      const annotated = items.map((it) =>
+        normalize({ ...it, origin: og })
+      );
       combinedOffers = combinedOffers.concat(annotated);
     }
 
-    // Sort deals by price ascending and return
-    combinedOffers.sort((a, b) => (Number(a.price || 0) - Number(b.price || 0)));
+    combinedOffers.sort((a, b) => a.price - b.price);
 
-    return res.status(200).json({ source: "special_offers", count: combinedOffers.length, data: combinedOffers });
+    return res.status(200).json({
+      source: "special_offers",
+      count: combinedOffers.length,
+      data: combinedOffers,
+    });
   } catch (err) {
     console.error("flights handler error", err);
     return res.status(500).json({ error: "Server error" });
