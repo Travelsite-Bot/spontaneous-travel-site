@@ -141,7 +141,7 @@ export default function Home() {
                 <text fontFamily="'Dancing Script', cursive" fontSize="14" fill="rgba(0,0,0,0.65)">
                   <textPath href="#route" startOffset="0">You have the when, let the where find you...</textPath>
                 </text>
-                <!-- Simple paper airplane -->
+{/* Simple paper airplane */}
                 <g transform="translate(168, -2)">
                   <path d="M0 20 L16 10 L12 20 L16 30 Z" fill="rgba(255,255,255,0.95)" stroke="rgba(0,0,0,0.12)" />
                 </g>
