@@ -24,12 +24,23 @@ export default function Home() {
   const [returnDate, setReturnDate] = useState(null);
   const [origins, setOrigins] = useState([]);
   const [destination, setDestination] = useState("");
-  const [passengers, setPassengers] = useState({ adults: 1, children: 0, infants: 0 });
+  const [passengers, setPassengers] = useState({
+    adults: 1,
+    children: 0,
+    infants: 0,
+  });
+  const [originalFlights, setOriginalFlights] = useState([]);
+  const [depStart, setDepStart] = useState("");
+  const [depEnd, setDepEnd] = useState("");
+  const [retStart, setRetStart] = useState("");
+  const [retEnd, setRetEnd] = useState("");
   const stepRef = useRef(null);
 
   const images = ["/blog1.jpg", "/blog2.jpg", "/blog3.jpg", "/blog4.jpg"];
 
-  const originParam = Array.isArray(origins) ? origins.join(",") : origins || "";
+  const originParam = Array.isArray(origins)
+    ? origins.join(",")
+    : origins || "";
 
   const handleSearch = async (e) => {
     e && e.preventDefault();
@@ -45,14 +56,58 @@ export default function Home() {
       const res = await fetch(`/api/flights?${params.toString()}`);
       const data = await res.json();
       setFlights(data.data || []);
+      setOriginalFlights(data.data || []);
       setShowResults(true);
       setTimeout(() => stepRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
     } catch (err) {
       console.error("Search error:", err);
       setFlights([]);
+      setOriginalFlights([]);
       setShowResults(true);
     }
   };
+
+  // filter flights by time
+  const applyTimeFilters = (flightsList) => {
+    let filtered = [...flightsList];
+
+    const toMinutes = (t) => {
+      if (!t) return null;
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
+    };
+
+    if (depStart && depEnd) {
+      const startMins = toMinutes(depStart);
+      const endMins = toMinutes(depEnd);
+      filtered = filtered.filter((f) => {
+        const mins =
+          new Date(f.departure_at).getHours() * 60 +
+          new Date(f.departure_at).getMinutes();
+        return mins >= startMins && mins <= endMins;
+      });
+    }
+
+    if (!oneWay && retStart && retEnd) {
+      const startMins = toMinutes(retStart);
+      const endMins = toMinutes(retEnd);
+      filtered = filtered.filter((f) => {
+        if (!f.return_at) return true; // skip if no return time
+        const mins =
+          new Date(f.return_at).getHours() * 60 +
+          new Date(f.return_at).getMinutes();
+        return mins >= startMins && mins <= endMins;
+      });
+    }
+
+    setFlights(filtered);
+  };
+
+  useEffect(() => {
+    if (originalFlights.length > 0) {
+      applyTimeFilters(originalFlights);
+    }
+  }, [depStart, depEnd, retStart, retEnd]);
 
   // simple auto-scroll for slider
   const sliderRef = useRef(null);
@@ -112,29 +167,58 @@ export default function Home() {
           </div>
 
           <nav className="flex items-center gap-4 text-sm font-sans">
-            <a href="/inspiration" className="text-white/90 hover:underline" style={{ fontFamily: "Inter, sans-serif" }}>
+            <a
+              href="/inspiration"
+              className="text-white/90 hover:underline"
+              style={{ fontFamily: "Inter, sans-serif" }}
+            >
               Inspiration
             </a>
-            <a href="#" className="text-white/90">📷</a>
-            <a href="#" className="text-white/90">📘</a>
-            <a href="#" className="text-white/90">🎵</a>
+            <a href="#" className="text-white/90">
+              📷
+            </a>
+            <a href="#" className="text-white/90">
+              📘
+            </a>
+            <a href="#" className="text-white/90">
+              🎵
+            </a>
           </nav>
         </header>
 
         {/* search area */}
         <main className="flex-grow flex flex-col items-center px-6 pb-12">
-          <div className="w-full max-w-3xl bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg" style={{ border: "1px solid rgba(0,0,0,0.06)" }}>
+          <div
+            className="w-full max-w-3xl bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg"
+            style={{ border: "1px solid rgba(0,0,0,0.06)" }}
+          >
             {/* tabs */}
             <div className="mb-3 flex gap-2">
               <button
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${tab === "adventure" ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}
-                onClick={() => { setTab("adventure"); setOrigins([]); setDestination(""); }}
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${
+                  tab === "adventure"
+                    ? "bg-green-700 text-white"
+                    : "bg-green-100 text-green-900"
+                }`}
+                onClick={() => {
+                  setTab("adventure");
+                  setOrigins([]);
+                  setDestination("");
+                }}
               >
                 ✈️ Adventure Anywhere
               </button>
               <button
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${tab === "select" ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}
-                onClick={() => { setTab("select"); setOrigins([]); setDestination(""); }}
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded ${
+                  tab === "select"
+                    ? "bg-green-700 text-white"
+                    : "bg-green-100 text-green-900"
+                }`}
+                onClick={() => {
+                  setTab("select");
+                  setOrigins([]);
+                  setDestination("");
+                }}
               >
                 📍 Select Destination
               </button>
@@ -167,8 +251,28 @@ export default function Home() {
               )}
 
               <div className="flex items-center gap-2">
-                <button type="button" onClick={() => setOneWay(true)} className={`px-3 py-1 rounded ${oneWay ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}>One-way</button>
-                <button type="button" onClick={() => setOneWay(false)} className={`px-3 py-1 rounded ${!oneWay ? "bg-green-700 text-white" : "bg-green-100 text-green-900"}`}>Return</button>
+                <button
+                  type="button"
+                  onClick={() => setOneWay(true)}
+                  className={`px-3 py-1 rounded ${
+                    oneWay
+                      ? "bg-green-700 text-white"
+                      : "bg-green-100 text-green-900"
+                  }`}
+                >
+                  One-way
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOneWay(false)}
+                  className={`px-3 py-1 rounded ${
+                    !oneWay
+                      ? "bg-green-700 text-white"
+                      : "bg-green-100 text-green-900"
+                  }`}
+                >
+                  Return
+                </button>
               </div>
 
               <div className="flex gap-2">
@@ -192,22 +296,38 @@ export default function Home() {
               </div>
 
               <div>
-                <button type="submit" className="w-full py-3 bg-green-700 text-white rounded font-semibold">Search</button>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-green-700 text-white rounded font-semibold"
+                >
+                  Search
+                </button>
               </div>
             </form>
           </div>
 
           {/* slider divider */}
-          <div ref={sliderRef} className="mt-8 flex gap-3 max-w-5xl overflow-x-auto scrollbar-hide">
+          <div
+            ref={sliderRef}
+            className="mt-8 flex gap-3 max-w-5xl overflow-x-auto scrollbar-hide"
+          >
             {images.map((src, i) => (
-              <img key={i} src={src} alt="" className="h-48 w-80 object-cover rounded shadow flex-shrink-0" />
+              <img
+                key={i}
+                src={src}
+                alt=""
+                className="h-48 w-80 object-cover rounded shadow flex-shrink-0"
+              />
             ))}
           </div>
         </main>
 
-        {/* results with filters */}
+        {/* results */}
         {showResults && (
-          <section ref={stepRef} className="w-full flex justify-center pb-12 px-6">
+          <section
+            ref={stepRef}
+            className="w-full flex justify-center pb-12 px-6"
+          >
             <div className="w-full max-w-6xl bg-white/95 rounded-lg shadow-lg p-4">
               <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
 
@@ -220,7 +340,7 @@ export default function Home() {
                       if (e.target.checked) {
                         setFlights((prev) => prev.filter((f) => f.direct));
                       } else {
-                        handleSearch(); // reload original
+                        setFlights(originalFlights);
                       }
                     }}
                   />
@@ -232,9 +352,15 @@ export default function Home() {
                     const val = e.target.value;
                     setFlights((prev) => {
                       const sorted = [...prev];
-                      if (val === "price_low") sorted.sort((a, b) => a.price - b.price);
-                      if (val === "price_high") sorted.sort((a, b) => b.price - a.price);
-                      if (val === "date") sorted.sort((a, b) => new Date(a.departure_at) - new Date(b.departure_at));
+                      if (val === "price_low")
+                        sorted.sort((a, b) => a.price - b.price);
+                      if (val === "price_high")
+                        sorted.sort((a, b) => b.price - a.price);
+                      if (val === "date")
+                        sorted.sort(
+                          (a, b) =>
+                            new Date(a.departure_at) - new Date(b.departure_at)
+                        );
                       return sorted;
                     });
                   }}
@@ -246,46 +372,72 @@ export default function Home() {
                   <option value="date">Earliest Departures</option>
                 </select>
 
-                <select
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (!val) return handleSearch();
-                    setFlights((prev) =>
-                      prev.filter((f) => {
-                        const hour = new Date(f.departure_at).getHours();
-                        if (val === "morning") return hour < 12;
-                        if (val === "afternoon") return hour >= 12 && hour < 18;
-                        if (val === "evening") return hour >= 18;
-                        return true;
-                      })
-                    );
-                  }}
-                  className="border rounded p-1"
-                >
-                  <option value="">Departure time</option>
-                  <option value="morning">Morning (0–12h)</option>
-                  <option value="afternoon">Afternoon (12–18h)</option>
-                  <option value="evening">Evening (18h+)</option>
-                </select>
+                {/* Custom time filters */}
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Depart between</span>
+                  <input
+                    type="time"
+                    step="900"
+                    value={depStart}
+                    onChange={(e) => setDepStart(e.target.value)}
+                    className="border rounded p-1"
+                  />
+                  <input
+                    type="time"
+                    step="900"
+                    value={depEnd}
+                    onChange={(e) => setDepEnd(e.target.value)}
+                    className="border rounded p-1"
+                  />
+                </div>
+
+                {!oneWay && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Return between</span>
+                    <input
+                      type="time"
+                      step="900"
+                      value={retStart}
+                      onChange={(e) => setRetStart(e.target.value)}
+                      className="border rounded p-1"
+                    />
+                    <input
+                      type="time"
+                      step="900"
+                      value={retEnd}
+                      onChange={(e) => setRetEnd(e.target.value)}
+                      className="border rounded p-1"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* flights */}
               {flights.length > 0 ? (
                 <div className="grid md:grid-cols-2 gap-4">
                   {flights.map((f, i) => (
-                    <div key={i} className="p-3 border rounded flex gap-3 items-start bg-white/98">
+                    <div
+                      key={i}
+                      className="p-3 border rounded flex gap-3 items-start bg-white/98"
+                    >
                       <div className="flex-1">
                         <div className="flex justify-between">
                           <div>
                             <div className="font-semibold">
                               {f.origin} → {f.destination}
                             </div>
-                            {!f.direct && <div className="text-xs text-gray-500">1+ stops</div>}
+                            {!f.direct && (
+                              <div className="text-xs text-gray-500">
+                                1+ stops
+                              </div>
+                            )}
                           </div>
                           <div className="text-right">
                             <div className="font-bold">${f.price}</div>
                             <div className="text-xs text-gray-500">
-                              {f.departure_at ? formatDDMM(f.departure_at) : ""}
+                              {f.departure_at
+                                ? formatDDMM(f.departure_at)
+                                : ""}
                             </div>
                           </div>
                         </div>
