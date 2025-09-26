@@ -1,8 +1,6 @@
 // pages/api/flights.js
-// Backend proxy for flight data. Supports:
-// - Select Destination: origin + destination -> prices_for_dates (per origin if multiple)
-// - Adventure Anywhere: origin only -> get_special_offers (per origin if multiple)
-// Accepts origin as single IATA (LON) or comma-separated list (LON,MAN,LGW)
+// Backend proxy for flight data. Now enforces direct-only flights and builds "Adventure Anywhere"
+// from a curated list of destinations using prices_for_dates.
 
 export default async function handler(req, res) {
   try {
@@ -10,7 +8,6 @@ export default async function handler(req, res) {
 
     const API_TOKEN = process.env.TP_API_TOKEN;
     if (!API_TOKEN) {
-      console.error("❌ Missing TP_API_TOKEN env var");
       return res.status(500).json({ error: "Missing TP_API_TOKEN env var" });
     }
 
@@ -24,27 +21,22 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "At least one origin required" });
     }
 
-    // Helper to fetch URL with token + log
+    // Helper to fetch with token
     const fetchWithToken = async (url) => {
-      console.log("🌍 Requesting:", url);
       const r = await fetch(url, {
         headers: { "X-Access-Token": API_TOKEN },
       });
       const txt = await r.text();
-
-      console.log("🔎 Response status:", r.status);
-      console.log("🔎 Response body:", txt.slice(0, 500)); // log first 500 chars
-
       let json = null;
       try {
         json = JSON.parse(txt);
       } catch (e) {
-        console.error("⚠️ Failed to parse JSON response");
+        // not JSON
       }
       return { ok: r.ok, status: r.status, json, text: txt };
     };
 
-    // If destination provided -> use prices_for_dates for each origin, combine results
+    // If destination provided -> use prices_for_dates for each origin
     if (destination) {
       let combined = [];
       for (const og of origins) {
@@ -53,12 +45,13 @@ export default async function handler(req, res) {
         params.append("destination", destination);
         if (depart_date) params.append("departure_at", depart_date);
         params.append("currency", "usd");
+        params.append("direct", "true"); // enforce direct flights
 
         const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?${params.toString()}`;
-        const { ok, status, json } = await fetchWithToken(url);
+        const { ok, status, json, text } = await fetchWithToken(url);
 
         if (!ok) {
-          console.error("❌ Flights API error", status);
+          console.error("Flights API error", status, text);
           continue;
         }
 
@@ -66,7 +59,7 @@ export default async function handler(req, res) {
         combined = combined.concat(items);
       }
 
-      // Deduplicate by destination+departure_at+price
+      // Deduplicate
       const best = {};
       combined.forEach((it) => {
         const key = `${it.origin}_${it.destination}_${it.departure_at || it.departure}`;
@@ -77,37 +70,54 @@ export default async function handler(req, res) {
       });
 
       const out = Object.values(best);
-      console.log(`✅ Returning ${out.length} flights for Select Destination`);
       return res.status(200).json({ source: "prices_for_dates", count: out.length, data: out });
     }
 
-    // No destination -> Adventure Anywhere -> use get_special_offers per origin
+    // No destination -> Adventure Anywhere mode
+    const adventureDestinations = [
+      "BCN", "LIS", "AMS", "ROM", "ATH", "PAR", "BER", "MAD", "DUB", "VIE", "PRG", "BUD", "CPH"
+    ];
+
     let combinedOffers = [];
     for (const og of origins) {
-      const params = new URLSearchParams();
-      params.append("origin", og);
-      if (depart_date) params.append("departure_at", depart_date);
-      params.append("currency", "usd");
+      for (const dest of adventureDestinations) {
+        if (og === dest) continue; // skip same city
+        const params = new URLSearchParams();
+        params.append("origin", og);
+        params.append("destination", dest);
+        if (depart_date) params.append("departure_at", depart_date);
+        params.append("currency", "usd");
+        params.append("direct", "true"); // enforce direct flights
 
-      const url = `https://api.travelpayouts.com/aviasales/v3/get_special_offers?${params.toString()}`;
-      const { ok, status, json } = await fetchWithToken(url);
+        const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?${params.toString()}`;
+        const { ok, status, json, text } = await fetchWithToken(url);
 
-      if (!ok) {
-        console.error("❌ Special offers API error", status);
-        continue;
+        if (!ok) {
+          console.error("Adventure Anywhere API error", status, text);
+          continue;
+        }
+
+        const items = (json && json.data) || [];
+        const annotated = items.map((it) => ({ ...it, origin_searched: og }));
+        combinedOffers = combinedOffers.concat(annotated);
       }
-
-      const items = (json && json.data) || [];
-      const annotated = items.map((it) => ({ ...it, origin_searched: og }));
-      combinedOffers = combinedOffers.concat(annotated);
     }
 
-    combinedOffers.sort((a, b) => (Number(a.price || 0) - Number(b.price || 0)));
-    console.log(`✅ Returning ${combinedOffers.length} special offers`);
+    // Deduplicate + sort by price
+    const best = {};
+    combinedOffers.forEach((it) => {
+      const key = `${it.origin}_${it.destination}_${it.departure_at || it.departure}`;
+      const price = Number(it.price || it.value || 0);
+      if (!best[key] || (price && price < best[key].price)) {
+        best[key] = { ...it, price: price || (it.price || it.value) };
+      }
+    });
 
-    return res.status(200).json({ source: "special_offers", count: combinedOffers.length, data: combinedOffers });
+    const out = Object.values(best).sort((a, b) => (a.price || 0) - (b.price || 0));
+
+    return res.status(200).json({ source: "adventure_anywhere", count: out.length, data: out });
   } catch (err) {
-    console.error("❌ flights handler error", err);
+    console.error("flights handler error", err);
     return res.status(500).json({ error: "Server error" });
   }
 }
