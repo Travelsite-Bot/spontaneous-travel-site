@@ -29,11 +29,14 @@ export default function Home() {
     children: 0,
     infants: 0,
   });
-  const [originalFlights, setOriginalFlights] = useState([]);
-  const [depStart, setDepStart] = useState("");
-  const [depEnd, setDepEnd] = useState("");
-  const [retStart, setRetStart] = useState("");
-  const [retEnd, setRetEnd] = useState("");
+
+  // filters
+  const [sortOption, setSortOption] = useState("price");
+  const [timeFilter, setTimeFilter] = useState({
+    start: "",
+    end: "",
+  });
+
   const stepRef = useRef(null);
 
   const images = ["/blog1.jpg", "/blog2.jpg", "/blog3.jpg", "/blog4.jpg"];
@@ -56,58 +59,17 @@ export default function Home() {
       const res = await fetch(`/api/flights?${params.toString()}`);
       const data = await res.json();
       setFlights(data.data || []);
-      setOriginalFlights(data.data || []);
       setShowResults(true);
-      setTimeout(() => stepRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
+      setTimeout(
+        () => stepRef.current?.scrollIntoView({ behavior: "smooth" }),
+        80
+      );
     } catch (err) {
       console.error("Search error:", err);
       setFlights([]);
-      setOriginalFlights([]);
       setShowResults(true);
     }
   };
-
-  // filter flights by time
-  const applyTimeFilters = (flightsList) => {
-    let filtered = [...flightsList];
-
-    const toMinutes = (t) => {
-      if (!t) return null;
-      const [h, m] = t.split(":").map(Number);
-      return h * 60 + m;
-    };
-
-    if (depStart && depEnd) {
-      const startMins = toMinutes(depStart);
-      const endMins = toMinutes(depEnd);
-      filtered = filtered.filter((f) => {
-        const mins =
-          new Date(f.departure_at).getHours() * 60 +
-          new Date(f.departure_at).getMinutes();
-        return mins >= startMins && mins <= endMins;
-      });
-    }
-
-    if (!oneWay && retStart && retEnd) {
-      const startMins = toMinutes(retStart);
-      const endMins = toMinutes(retEnd);
-      filtered = filtered.filter((f) => {
-        if (!f.return_at) return true; // skip if no return time
-        const mins =
-          new Date(f.return_at).getHours() * 60 +
-          new Date(f.return_at).getMinutes();
-        return mins >= startMins && mins <= endMins;
-      });
-    }
-
-    setFlights(filtered);
-  };
-
-  useEffect(() => {
-    if (originalFlights.length > 0) {
-      applyTimeFilters(originalFlights);
-    }
-  }, [depStart, depEnd, retStart, retEnd]);
 
   // simple auto-scroll for slider
   const sliderRef = useRef(null);
@@ -125,6 +87,22 @@ export default function Home() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // apply filters
+  const filteredFlights = flights
+    .filter((f) => {
+      if (!timeFilter.start || !timeFilter.end) return true;
+      if (!f.departure_at) return true;
+      const depTime = new Date(f.departure_at).toISOString().substring(11, 16); // "HH:MM"
+      return depTime >= timeFilter.start && depTime <= timeFilter.end;
+    })
+    .sort((a, b) => {
+      if (sortOption === "price") return (a.price || 0) - (b.price || 0);
+      if (sortOption === "duration") return (a.duration || 0) - (b.duration || 0);
+      if (sortOption === "departure")
+        return new Date(a.departure_at) - new Date(b.departure_at);
+      return 0;
+    });
 
   return (
     <>
@@ -332,90 +310,52 @@ export default function Home() {
               <h2 className="text-lg font-bold mb-3">Your next adventure...</h2>
 
               {/* filter bar */}
-              <div className="flex flex-wrap items-center gap-3 mb-4 text-sm">
-                <label className="flex items-center gap-1">
-                  <input
-                    type="checkbox"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setFlights((prev) => prev.filter((f) => f.direct));
-                      } else {
-                        setFlights(originalFlights);
-                      }
-                    }}
-                  />
-                  Direct only
-                </label>
-
-                <select
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setFlights((prev) => {
-                      const sorted = [...prev];
-                      if (val === "price_low")
-                        sorted.sort((a, b) => a.price - b.price);
-                      if (val === "price_high")
-                        sorted.sort((a, b) => b.price - a.price);
-                      if (val === "date")
-                        sorted.sort(
-                          (a, b) =>
-                            new Date(a.departure_at) - new Date(b.departure_at)
-                        );
-                      return sorted;
-                    });
-                  }}
-                  className="border rounded p-1"
-                >
-                  <option value="">Sort by</option>
-                  <option value="price_low">Price (Low → High)</option>
-                  <option value="price_high">Price (High → Low)</option>
-                  <option value="date">Earliest Departures</option>
-                </select>
-
-                {/* Custom time filters */}
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Depart between</span>
-                  <input
-                    type="time"
-                    step="900"
-                    value={depStart}
-                    onChange={(e) => setDepStart(e.target.value)}
-                    className="border rounded p-1"
-                  />
-                  <input
-                    type="time"
-                    step="900"
-                    value={depEnd}
-                    onChange={(e) => setDepEnd(e.target.value)}
-                    className="border rounded p-1"
-                  />
-                </div>
-
-                {!oneWay && (
+              {flights.length > 0 && (
+                <div className="mb-4 flex flex-wrap items-center gap-3 bg-gray-100 p-3 rounded-lg shadow-sm">
+                  {/* Sort options */}
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600">Return between</span>
+                    <label className="text-sm font-medium">Sort by:</label>
+                    <select
+                      value={sortOption}
+                      onChange={(e) => setSortOption(e.target.value)}
+                      className="rounded-lg border-gray-300 text-sm"
+                    >
+                      <option value="price">Lowest Price</option>
+                      <option value="duration">Shortest Duration</option>
+                      <option value="departure">Earliest Departure</option>
+                    </select>
+                  </div>
+
+                  {/* Time filter */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium">
+                      Departure Window:
+                    </label>
                     <input
                       type="time"
-                      step="900"
-                      value={retStart}
-                      onChange={(e) => setRetStart(e.target.value)}
-                      className="border rounded p-1"
+                      value={timeFilter.start}
+                      onChange={(e) =>
+                        setTimeFilter({ ...timeFilter, start: e.target.value })
+                      }
+                      className="rounded-lg border-gray-300 text-sm"
                     />
+                    <span>-</span>
                     <input
                       type="time"
-                      step="900"
-                      value={retEnd}
-                      onChange={(e) => setRetEnd(e.target.value)}
-                      className="border rounded p-1"
+                      value={timeFilter.end}
+                      onChange={(e) =>
+                        setTimeFilter({ ...timeFilter, end: e.target.value })
+                      }
+                      className="rounded-lg border-gray-300 text-sm"
                     />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* flights */}
-              {flights.length > 0 ? (
+              {filteredFlights.length > 0 ? (
                 <div className="grid md:grid-cols-2 gap-4">
-                  {flights.map((f, i) => (
+                  {filteredFlights.map((f, i) => (
                     <div
                       key={i}
                       className="p-3 border rounded flex gap-3 items-start bg-white/98"
@@ -426,18 +366,11 @@ export default function Home() {
                             <div className="font-semibold">
                               {f.origin} → {f.destination}
                             </div>
-                            {!f.direct && (
-                              <div className="text-xs text-gray-500">
-                                1+ stops
-                              </div>
-                            )}
                           </div>
                           <div className="text-right">
                             <div className="font-bold">${f.price}</div>
                             <div className="text-xs text-gray-500">
-                              {f.departure_at
-                                ? formatDDMM(f.departure_at)
-                                : ""}
+                              {f.departure_at ? formatDDMM(f.departure_at) : ""}
                             </div>
                           </div>
                         </div>
